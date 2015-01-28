@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "mbullington.dialogue"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 21
 
         testApplicationId "mbullington.dialogue.test"

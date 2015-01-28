@@ -29,6 +29,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,6 +66,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private ServerReceiver receiver;
     private ServerListAdapter adapter;
     private ListView list;
+    private Toolbar toolbar;
 
     /**
      * On create
@@ -85,7 +87,10 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             finish();
         }
         instanceCount++;
-        setContentView(R.layout.servers);
+        setContentView(R.layout.main);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         adapter = new ServerListAdapter();
 
@@ -257,7 +262,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
         // inflate from xml
         MenuInflater inflater = new MenuInflater(this);
-        inflater.inflate(R.menu.servers, menu);
+        inflater.inflate(R.menu.main, menu);
 
         return true;
     }

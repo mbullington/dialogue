@@ -28,6 +28,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 
 import org.jibble.pircbot.IrcException;
@@ -58,11 +59,11 @@ import mbullington.dialogue.receiver.ReconnectReceiver;
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
 public class IRCService extends Service {
-    public static final String ACTION_FOREGROUND = "mbullington.hermes.service.foreground";
-    public static final String ACTION_BACKGROUND = "mbullington.hermes.service.background";
-    public static final String ACTION_ACK_NEW_MENTIONS = "mbullington.hermes.service.ack_new_mentions";
-    public static final String EXTRA_ACK_SERVERID = "mbullington.hermes.service.ack_serverid";
-    public static final String EXTRA_ACK_CONVTITLE = "mbullington.hermes.service.ack_convtitle";
+    public static final String ACTION_FOREGROUND = "mbullington.dialogue.service.foreground";
+    public static final String ACTION_BACKGROUND = "mbullington.dialogue.service.background";
+    public static final String ACTION_ACK_NEW_MENTIONS = "mbullington.dialogue.service.ack_new_mentions";
+    public static final String EXTRA_ACK_SERVERID = "mbullington.dialogue.service.ack_serverid";
+    public static final String EXTRA_ACK_CONVTITLE = "mbullington.dialogue.service.ack_convtitle";
 
     private static final int FOREGROUND_NOTIFICATION = 1;
     private static final int NOTIFICATION_LED_OFF_MS = 1000;
@@ -217,10 +218,20 @@ public class IRCService extends Service {
      */
     private void updateNotification(String text, String contentText, boolean vibrate, boolean sound, boolean light) {
         if (foreground) {
-            notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
             Intent notifyIntent = new Intent(this, MainActivity.class);
             notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
+
+            notification = new Notification.Builder(this)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon))
+                    .setContentTitle(getResources().getString(R.string.app_name))
+                    .setSubText(text)
+                    .setContentText(contentText)
+                    .setContentIntent(contentIntent)
+                    .setWhen(System.currentTimeMillis())
+                    .setVisibility(Notification.VISIBILITY_PRIVATE)
+                    .setCategory(Notification.CATEGORY_SOCIAL)
+                    .build();
 
             if (contentText == null) {
                 if (newMentions >= 1) {
@@ -239,8 +250,6 @@ public class IRCService extends Service {
                     contentText = getString(R.string.notification_not_connected);
                 }
             }
-
-            notification.setLatestEventInfo(this, getText(R.string.app_name), contentText, contentIntent);
 
             if (vibrate) {
                 notification.defaults |= Notification.DEFAULT_VIBRATE;
