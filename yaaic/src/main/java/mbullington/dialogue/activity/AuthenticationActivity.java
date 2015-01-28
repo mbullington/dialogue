@@ -20,21 +20,21 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-import mbullington.dialogue.model.Extra;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+
+import mbullington.dialogue.R;
+import mbullington.dialogue.model.Extra;
 
 /**
  * Authentication activity for entering nickserv / sasl usernames and password
@@ -42,8 +42,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class AuthenticationActivity extends Activity implements OnCheckedChangeListener, OnClickListener
-{
+public class AuthenticationActivity extends Activity implements OnCheckedChangeListener, OnClickListener {
     private CheckBox nickservCheckbox;
     private TextView nickservPasswordLabel;
     private EditText nickservPasswordEditText;
@@ -58,8 +57,7 @@ public class AuthenticationActivity extends Activity implements OnCheckedChangeL
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -106,8 +104,7 @@ public class AuthenticationActivity extends Activity implements OnCheckedChangeL
      * On checkbox changed
      */
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-    {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.nickserv_checkbox:
                 nickservPasswordLabel.setEnabled(isChecked);
@@ -138,8 +135,7 @@ public class AuthenticationActivity extends Activity implements OnCheckedChangeL
      * On click on button
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ok:
                 Intent intent = new Intent();

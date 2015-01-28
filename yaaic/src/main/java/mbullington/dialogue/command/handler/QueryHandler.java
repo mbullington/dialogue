@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -29,24 +32,19 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Query;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /query <nickname>
- * 
+ * <p/>
  * Opens a private chat with the given user
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class QueryHandler extends BaseHandler
-{
+public class QueryHandler extends BaseHandler {
     /**
      * Execute /query
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length == 2) {
             // Simple validation
             if (params[1].startsWith("#")) {
@@ -64,9 +62,9 @@ public class QueryHandler extends BaseHandler
             server.addConversation(query);
 
             Intent intent = Broadcast.createConversationIntent(
-                Broadcast.CONVERSATION_NEW,
-                server.getId(),
-                query.getName()
+                    Broadcast.CONVERSATION_NEW,
+                    server.getId(),
+                    query.getName()
             );
             service.sendBroadcast(intent);
         } else {
@@ -78,8 +76,7 @@ public class QueryHandler extends BaseHandler
      * Usage of /query
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/query <nickname>";
     }
 
@@ -87,8 +84,7 @@ public class QueryHandler extends BaseHandler
      * Description of /query
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_query);
     }
 }

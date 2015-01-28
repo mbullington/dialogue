@@ -24,29 +24,27 @@ import android.content.Intent;
 
 /**
  * Constants and helpers for Broadcasts
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public abstract class Broadcast
-{
-    public static final String SERVER_UPDATE         = "mbullington.hermes.server.status";
-    public static final String SERVER_RECONNECT      = "mbullington.hermes.server.reconnect.";
+public abstract class Broadcast {
+    public static final String SERVER_UPDATE = "mbullington.hermes.server.status";
+    public static final String SERVER_RECONNECT = "mbullington.hermes.server.reconnect.";
 
-    public static final String CONVERSATION_MESSAGE    = "mbullington.hermes.conversation.message";
-    public static final String CONVERSATION_NEW        = "mbullington.hermes.conversation.new";
-    public static final String CONVERSATION_REMOVE    = "mbullington.hermes.conversation.remove";
-    public static final String CONVERSATION_TOPIC    = "mbullington.hermes.conversation.topic";
+    public static final String CONVERSATION_MESSAGE = "mbullington.hermes.conversation.message";
+    public static final String CONVERSATION_NEW = "mbullington.hermes.conversation.new";
+    public static final String CONVERSATION_REMOVE = "mbullington.hermes.conversation.remove";
+    public static final String CONVERSATION_TOPIC = "mbullington.hermes.conversation.topic";
 
     /**
      * Create an Intent for conversation broadcasting
-     * 
-     * @param broadcastType The type of the broadcast, some constant of Broadcast.*
-     * @param serverId The id of the server
+     *
+     * @param broadcastType    The type of the broadcast, some constant of Broadcast.*
+     * @param serverId         The id of the server
      * @param conversationName The unique name of the conversation
-     * @return  The created Intent
+     * @return The created Intent
      */
-    public static Intent createConversationIntent(String broadcastType, int serverId, String conversationName)
-    {
+    public static Intent createConversationIntent(String broadcastType, int serverId, String conversationName) {
         Intent intent = new Intent(broadcastType);
 
         intent.putExtra(Extra.SERVER, serverId);
@@ -57,13 +55,12 @@ public abstract class Broadcast
 
     /**
      * Create an Intent for server broadcasting
-     * 
+     *
      * @param broadcastType The typo of the broadcast, some constant of Broadcast.*
-     * @param serverId The id of the server
+     * @param serverId      The id of the server
      * @return The created Intent
      */
-    public static Intent createServerIntent(String broadcastType, int serverId)
-    {
+    public static Intent createServerIntent(String broadcastType, int serverId) {
         Intent intent = new Intent(broadcastType);
 
         intent.putExtra(Extra.SERVER, serverId);

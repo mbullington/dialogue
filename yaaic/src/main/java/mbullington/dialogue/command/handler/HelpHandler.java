@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import java.util.HashMap;
 import java.util.Set;
 
@@ -33,23 +36,18 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /help
- * 
+ *
  * @author Karol Gliniecki <karol.gliniecki@googlemail.com>
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class HelpHandler extends BaseHandler
-{
+public class HelpHandler extends BaseHandler {
     /**
      * Execute /help
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length == 2) {
             showCommandDetails(service, server, conversation, params[1]);
         } else if (params.length == 1) {
@@ -61,13 +59,12 @@ public class HelpHandler extends BaseHandler
 
     /**
      * Show all available commands
-     * 
+     *
      * @param conversation
      * @param server
      * @param service
      */
-    private void showAllCommands(IRCService service, Server server, Conversation conversation)
-    {
+    private void showAllCommands(IRCService service, Server server, Conversation conversation) {
         CommandParser cp = CommandParser.getInstance();
 
         StringBuffer commandList = new StringBuffer(service.getString(R.string.available_commands));
@@ -87,7 +84,7 @@ public class HelpHandler extends BaseHandler
                     break;
                 }
             }
-            commandList.append("/" + command.toString() + alias + " - "+commands.get(command).getDescription(service) + "\n");
+            commandList.append("/" + command.toString() + alias + " - " + commands.get(command).getDescription(service) + "\n");
         }
 
         Message message = new Message(commandList.toString());
@@ -95,9 +92,9 @@ public class HelpHandler extends BaseHandler
         conversation.addMessage(message);
 
         Intent intent = Broadcast.createConversationIntent(
-            Broadcast.CONVERSATION_MESSAGE,
-            server.getId(),
-            conversation.getName()
+                Broadcast.CONVERSATION_MESSAGE,
+                server.getId(),
+                conversation.getName()
         );
 
         service.sendBroadcast(intent);
@@ -105,15 +102,14 @@ public class HelpHandler extends BaseHandler
 
     /**
      * Show details of a single command
-     * 
+     *
      * @param conversation
      * @param server
      * @param service
      * @param command
      * @throws CommandException
      */
-    private void showCommandDetails(IRCService service, Server server, Conversation conversation, String command) throws CommandException
-    {
+    private void showCommandDetails(IRCService service, Server server, Conversation conversation, String command) throws CommandException {
         CommandParser cp = CommandParser.getInstance();
         HashMap<String, BaseHandler> commands = cp.getCommands();
 
@@ -124,9 +120,9 @@ public class HelpHandler extends BaseHandler
             conversation.addMessage(message);
 
             Intent intent = Broadcast.createConversationIntent(
-                Broadcast.CONVERSATION_MESSAGE,
-                server.getId(),
-                conversation.getName()
+                    Broadcast.CONVERSATION_MESSAGE,
+                    server.getId(),
+                    conversation.getName()
             );
 
             service.sendBroadcast(intent);
@@ -139,8 +135,7 @@ public class HelpHandler extends BaseHandler
      * Usage of /help
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/help [<command>]";
     }
 
@@ -148,8 +143,7 @@ public class HelpHandler extends BaseHandler
      * Description of /help
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_help);
     }
 }

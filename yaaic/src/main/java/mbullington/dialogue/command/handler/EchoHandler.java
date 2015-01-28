@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -29,30 +32,25 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /echo <text>
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class EchoHandler extends BaseHandler
-{
+public class EchoHandler extends BaseHandler {
     /**
      * Execute /echo
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length > 1) {
             Message message = new Message(BaseHandler.mergeParams(params));
             conversation.addMessage(message);
 
             Intent intent = Broadcast.createConversationIntent(
-                Broadcast.CONVERSATION_MESSAGE,
-                server.getId(),
-                conversation.getName()
+                    Broadcast.CONVERSATION_MESSAGE,
+                    server.getId(),
+                    conversation.getName()
             );
             service.sendBroadcast(intent);
         } else {
@@ -64,8 +62,7 @@ public class EchoHandler extends BaseHandler
      * Usage of /echo
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/echo <text>";
     }
 
@@ -73,8 +70,7 @@ public class EchoHandler extends BaseHandler
      * Description of /echo
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_echo);
     }
 }

@@ -20,21 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import java.util.ArrayList;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.Hermes;
-import mbullington.dialogue.adapter.ServerListAdapter;
-import mbullington.dialogue.db.Database;
-import mbullington.dialogue.irc.IRCBinder;
-import mbullington.dialogue.irc.IRCService;
-import mbullington.dialogue.listener.ServerListener;
-import mbullington.dialogue.model.Broadcast;
-import mbullington.dialogue.model.Extra;
-import mbullington.dialogue.model.Server;
-import mbullington.dialogue.model.Status;
-import mbullington.dialogue.receiver.ServerReceiver;
-
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -54,24 +39,38 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import mbullington.dialogue.Dialogue;
+import mbullington.dialogue.R;
+import mbullington.dialogue.adapter.ServerListAdapter;
+import mbullington.dialogue.db.Database;
+import mbullington.dialogue.irc.IRCBinder;
+import mbullington.dialogue.irc.IRCService;
+import mbullington.dialogue.listener.ServerListener;
+import mbullington.dialogue.model.Broadcast;
+import mbullington.dialogue.model.Extra;
+import mbullington.dialogue.model.Server;
+import mbullington.dialogue.model.Status;
+import mbullington.dialogue.receiver.ServerReceiver;
+
 /**
  * List of servers
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ServersActivity extends ActionBarActivity implements ServiceConnection, ServerListener, OnItemClickListener, OnItemLongClickListener {
+public class MainActivity extends ActionBarActivity implements ServiceConnection, ServerListener, OnItemClickListener, OnItemLongClickListener {
+    private static int instanceCount = 0;
     private IRCBinder binder;
     private ServerReceiver receiver;
     private ServerListAdapter adapter;
     private ListView list;
-    private static int instanceCount = 0;
 
     /**
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /*
          * With activity:launchMode = standard, we get duplicated activities
@@ -100,8 +99,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On Destroy
      */
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         instanceCount--;
     }
@@ -110,8 +108,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On resume
      */
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 
         // Start and connect to service
@@ -130,8 +127,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On pause
      */
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
 
         if (binder != null && binder.getService() != null) {
@@ -146,8 +142,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * Service connected to Activity
      */
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service)
-    {
+    public void onServiceConnected(ComponentName name, IBinder service) {
         binder = (IRCBinder) service;
     }
 
@@ -155,8 +150,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * Service disconnected from Activity
      */
     @Override
-    public void onServiceDisconnected(ComponentName name)
-    {
+    public void onServiceDisconnected(ComponentName name) {
         binder = null;
     }
 
@@ -188,8 +182,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On long click
      */
     @Override
-    public boolean onItemLongClick(AdapterView<?> l, View v, int position, long id)
-    {
+    public boolean onItemLongClick(AdapterView<?> l, View v, int position, long id) {
         final Server server = adapter.getItem(position);
 
         if (server == null) {
@@ -198,10 +191,10 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
         }
 
         final CharSequence[] items = {
-            getString(R.string.connect),
-            getString(R.string.disconnect),
-            getString(R.string.edit),
-            getString(R.string.delete)
+                getString(R.string.connect),
+                getString(R.string.disconnect),
+                getString(R.string.edit),
+                getString(R.string.delete)
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -243,14 +236,12 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      *
      * @param serverId The id of the server
      */
-    private void editServer(int serverId)
-    {
-        Server server = Hermes.getInstance().getServerById(serverId);
+    private void editServer(int serverId) {
+        Server server = Dialogue.getInstance().getServerById(serverId);
 
         if (server.getStatus() != Status.DISCONNECTED) {
             Toast.makeText(this, getResources().getString(R.string.disconnect_before_editing), Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Intent intent = new Intent(this, AddServerActivity.class);
             intent.putExtra(Extra.SERVER, serverId);
             startActivityForResult(intent, 0);
@@ -261,8 +252,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * Options Menu (Menu Button pressed)
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         // inflate from xml
@@ -288,7 +278,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.disconnect_all:
-                ArrayList<Server> mServers = Hermes.getInstance().getServersAsArrayList();
+                ArrayList<Server> mServers = Dialogue.getInstance().getServersAsArrayList();
                 for (Server server : mServers) {
                     if (binder.getService().hasConnection(server.getId())) {
                         server.setStatus(Status.DISCONNECTED);
@@ -307,8 +297,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On activity result
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             // Refresh list from database
             adapter.loadServers();
@@ -320,13 +309,12 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      *
      * @param serverId
      */
-    public void deleteServer(int serverId)
-    {
+    public void deleteServer(int serverId) {
         Database db = new Database(this);
         db.removeServerById(serverId);
         db.close();
 
-        Hermes.getInstance().removeServerById(serverId);
+        Dialogue.getInstance().removeServerById(serverId);
         adapter.loadServers();
     }
 
@@ -334,8 +322,7 @@ public class ServersActivity extends ActionBarActivity implements ServiceConnect
      * On server status update
      */
     @Override
-    public void onStatusUpdate()
-    {
+    public void onStatusUpdate() {
         adapter.loadServers();
 
         if (adapter.getCount() > 2) {

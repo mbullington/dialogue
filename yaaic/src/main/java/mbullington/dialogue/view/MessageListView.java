@@ -20,27 +20,25 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.view;
 
+import android.content.Context;
+import android.widget.ListView;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.adapter.MessageListAdapter;
 import mbullington.dialogue.listener.MessageClickListener;
-
-import android.content.Context;
-import android.widget.ListView;
 
 /**
  * A customized ListView for Messages
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class MessageListView extends ListView
-{
+public class MessageListView extends ListView {
     /**
      * Create a new MessageListView
      *
      * @param context
      */
-    public MessageListView(Context context)
-    {
+    public MessageListView(Context context) {
         super(context);
 
         setOnItemClickListener(MessageClickListener.getInstance());
@@ -67,8 +65,7 @@ public class MessageListView extends ListView
      * @return The MessageListAdapter
      */
     @Override
-    public MessageListAdapter getAdapter()
-    {
+    public MessageListAdapter getAdapter() {
         return (MessageListAdapter) super.getAdapter();
     }
 }

@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import java.io.File;
 
 import mbullington.dialogue.R;
@@ -31,23 +33,19 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /dcc SEND <nickname> <file>
- * 
+ * <p/>
  * Send a file to a user
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class DCCHandler extends BaseHandler
-{
+public class DCCHandler extends BaseHandler {
     /**
      * Execute /dcc
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length == 4) {
             if (!params[1].equalsIgnoreCase("SEND")) {
                 throw new CommandException(service.getString(R.string.dcc_only_send));
@@ -64,7 +62,7 @@ public class DCCHandler extends BaseHandler
             conversation.addMessage(message);
 
             service.sendBroadcast(
-                Broadcast.createConversationIntent(Broadcast.CONVERSATION_MESSAGE, server.getId(), conversation.getName())
+                    Broadcast.createConversationIntent(Broadcast.CONVERSATION_MESSAGE, server.getId(), conversation.getName())
             );
         } else {
             throw new CommandException(service.getString(R.string.invalid_number_of_params));
@@ -75,8 +73,7 @@ public class DCCHandler extends BaseHandler
      * Usage of /dcc
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/dcc SEND <nickname> <file>";
     }
 
@@ -84,8 +81,7 @@ public class DCCHandler extends BaseHandler
      * Description of /dcc
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_dcc);
     }
 }

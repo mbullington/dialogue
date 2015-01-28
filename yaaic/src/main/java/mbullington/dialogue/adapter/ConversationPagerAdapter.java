@@ -20,6 +20,13 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
 */
 package mbullington.dialogue.adapter;
 
+import android.content.Context;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+
+import com.viewpagerindicator.TitlePageIndicator;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -29,43 +36,20 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 import mbullington.dialogue.view.MessageListView;
 
-import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-
-import com.viewpagerindicator.TitlePageIndicator;
-
 /**
  * Adapter for displaying a pager of conversations.
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ConversationPagerAdapter extends PagerAdapter implements ConversationStateProvider
-{
-    public static final int COLOR_NONE      = 0x0;
-    public static final int COLOR_DEFAULT   = 0xFFDDDDDD;
-    public static final int COLOR_MESSAGE   = 0xFF31B6E7;
+public class ConversationPagerAdapter extends PagerAdapter implements ConversationStateProvider {
+    public static final int COLOR_NONE = 0x0;
+    public static final int COLOR_DEFAULT = 0xFFDDDDDD;
+    public static final int COLOR_MESSAGE = 0xFF31B6E7;
     public static final int COLOR_HIGHLIGHT = 0xFFFFBB00;
 
     private final Server server;
-    private LinkedList<ConversationInfo> conversations;
     private final HashMap<Integer, View> views;
-
-    /**
-     * Container class to remember conversation and view association.
-     */
-    public class ConversationInfo {
-        public Conversation conv;
-        public MessageListAdapter adapter;
-        public MessageListView view;
-
-        public ConversationInfo(Conversation conv) {
-            this.conv = conv;
-            this.adapter = null;
-            this.view = null;
-        }
-    }
+    private LinkedList<ConversationInfo> conversations;
 
     /**
      * Create a new {@link ConversationPagerAdapter} instance.
@@ -103,8 +87,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Get position of given item.
      */
     @Override
-    public int getItemPosition(Object object)
-    {
+    public int getItemPosition(Object object) {
         if (views.containsKey(object)) {
             return POSITION_UNCHANGED;
         }
@@ -115,8 +98,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
     /**
      * Get item at position
      */
-    public Conversation getItem(int position)
-    {
+    public Conversation getItem(int position) {
         ConversationInfo convInfo = getItemInfo(position);
         if (convInfo != null) {
             return convInfo.conv;
@@ -131,8 +113,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * @param position
      * @return
      */
-    public MessageListAdapter getItemAdapter(int position)
-    {
+    public MessageListAdapter getItemAdapter(int position) {
         ConversationInfo convInfo = getItemInfo(position);
         if (convInfo != null) {
             return convInfo.adapter;
@@ -148,8 +129,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * @param name
      * @return
      */
-    public MessageListAdapter getItemAdapter(String name)
-    {
+    public MessageListAdapter getItemAdapter(String name) {
         return getItemAdapter(getPositionByName(name));
     }
 
@@ -171,13 +151,12 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * @param channel
      * @return The item
      */
-    public int getPositionByName(String name)
-    {
+    public int getPositionByName(String name) {
         // Optimization - cache field lookups
         int mSize = conversations.size();
         LinkedList<ConversationInfo> mItems = this.conversations;
 
-        for (int i = 0; i <  mSize; i++) {
+        for (int i = 0; i < mSize; i++) {
             if (mItems.get(i).conv.getName().equalsIgnoreCase(name)) {
                 return i;
             }
@@ -189,8 +168,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
     /**
      * Remove all conversations.
      */
-    public void clearConversations()
-    {
+    public void clearConversations() {
         conversations = new LinkedList<ConversationInfo>();
     }
 
@@ -198,8 +176,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Get number of conversations from this adapter.
      */
     @Override
-    public int getCount()
-    {
+    public int getCount() {
         return conversations.size();
     }
 
@@ -207,8 +184,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Determines whether a page View is associated with a specific key object.
      */
     @Override
-    public boolean isViewFromObject(View view, Object object)
-    {
+    public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
 
@@ -240,8 +216,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * @param parent
      * @return
      */
-    private MessageListView renderConversation(ConversationInfo convInfo, View parent)
-    {
+    private MessageListView renderConversation(ConversationInfo convInfo, View parent) {
         MessageListView list = new MessageListView(parent.getContext());
         convInfo.view = list;
         list.setOnItemClickListener(MessageClickListener.getInstance());
@@ -273,8 +248,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Get the title for the given position. Used by the {@link TitlePageIndicator}.
      */
     @Override
-    public String getPageTitle(int position)
-    {
+    public String getPageTitle(int position) {
         Conversation conversation = getItem(position);
 
         if (conversation.getType() == Conversation.TYPE_SERVER) {
@@ -285,8 +259,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
     }
 
     @Override
-    public int getColorAt(int position)
-    {
+    public int getColorAt(int position) {
         Conversation conversation = getItem(position);
 
         switch (conversation.getStatus()) {
@@ -305,8 +278,7 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Get the state color for all conversations lower than the given position.
      */
     @Override
-    public int getColorForLowerThan(int position)
-    {
+    public int getColorForLowerThan(int position) {
         int color = COLOR_NONE;
 
         for (int i = 0; i < position; i++) {
@@ -328,9 +300,8 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
      * Get the state color for all conversations greater than the given position.
      */
     @Override
-    public int getColorForGreaterThan(int position)
-    {
-        int size  = conversations.size();
+    public int getColorForGreaterThan(int position) {
+        int size = conversations.size();
         int color = COLOR_NONE;
 
         for (int i = position + 1; i < size; i++) {
@@ -346,5 +317,20 @@ public class ConversationPagerAdapter extends PagerAdapter implements Conversati
         }
 
         return color;
+    }
+
+    /**
+     * Container class to remember conversation and view association.
+     */
+    public class ConversationInfo {
+        public Conversation conv;
+        public MessageListAdapter adapter;
+        public MessageListView view;
+
+        public ConversationInfo(Conversation conv) {
+            this.conv = conv;
+            this.adapter = null;
+            this.view = null;
+        }
     }
 }

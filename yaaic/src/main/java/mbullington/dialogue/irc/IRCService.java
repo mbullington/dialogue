@@ -21,17 +21,27 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.irc;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.SystemClock;
+
+import org.jibble.pircbot.IrcException;
+import org.jibble.pircbot.NickAlreadyInUseException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.jibble.pircbot.IrcException;
-import org.jibble.pircbot.NickAlreadyInUseException;
+import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
-import mbullington.dialogue.Hermes;
-import mbullington.dialogue.activity.ServersActivity;
+import mbullington.dialogue.activity.MainActivity;
 import mbullington.dialogue.db.Database;
 import mbullington.dialogue.model.Broadcast;
 import mbullington.dialogue.model.Conversation;
@@ -42,22 +52,12 @@ import mbullington.dialogue.model.Settings;
 import mbullington.dialogue.model.Status;
 import mbullington.dialogue.receiver.ReconnectReceiver;
 
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.SystemClock;
-
 /**
  * The background service for managing the irc connections
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class IRCService extends Service
-{
+public class IRCService extends Service {
     public static final String ACTION_FOREGROUND = "mbullington.hermes.service.foreground";
     public static final String ACTION_BACKGROUND = "mbullington.hermes.service.background";
     public static final String ACTION_ACK_NEW_MENTIONS = "mbullington.hermes.service.ack_new_mentions";
@@ -70,36 +70,33 @@ public class IRCService extends Service
     private static final int NOTIFICATION_LED_COLOR = 0xff00ff00;
 
     @SuppressWarnings("rawtypes")
-    private static final Class[] mStartForegroundSignature = new Class[] { int.class, Notification.class };
+    private static final Class[] mStartForegroundSignature = new Class[]{int.class, Notification.class};
     @SuppressWarnings("rawtypes")
-    private static final Class[] mStopForegroundSignature = new Class[] { boolean.class };
+    private static final Class[] mStopForegroundSignature = new Class[]{boolean.class};
     @SuppressWarnings("rawtypes")
-    private static final Class[] mSetForegroudSignaure = new Class[] { boolean.class };
+    private static final Class[] mSetForegroudSignaure = new Class[]{boolean.class};
 
     private final IRCBinder binder;
     private final HashMap<Integer, IRCConnection> connections;
-    private boolean foreground = false;
     private final ArrayList<String> connectedServerTitles;
     private final LinkedHashMap<String, Conversation> mentions;
+    private final Object[] mStartForegroundArgs = new Object[2];
+    private final Object[] mStopForegroundArgs = new Object[1];
+    private final Object alarmIntentsLock;
+    private boolean foreground = false;
     private int newMentions = 0;
-
     private NotificationManager notificationManager;
     private Method mStartForeground;
     private Method mStopForeground;
-    private final Object[] mStartForegroundArgs = new Object[2];
-    private final Object[] mStopForegroundArgs = new Object[1];
     private Notification notification;
     private Settings settings;
-
     private HashMap<Integer, PendingIntent> alarmIntents;
     private HashMap<Integer, ReconnectReceiver> alarmReceivers;
-    private final Object alarmIntentsLock;
 
     /**
      * Create new service
      */
-    public IRCService()
-    {
+    public IRCService() {
         super();
 
         this.connections = new HashMap<Integer, IRCConnection>();
@@ -115,8 +112,7 @@ public class IRCService extends Service
      * On create
      */
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
 
         settings = new Settings(getBaseContext());
@@ -132,7 +128,7 @@ public class IRCService extends Service
 
         // Load servers from Database
         Database db = new Database(this);
-        Hermes.getInstance().setServers(db.getServers());
+        Dialogue.getInstance().setServers(db.getServers());
         db.close();
 
         // Broadcast changed server list
@@ -144,8 +140,7 @@ public class IRCService extends Service
      *
      * @return the settings helper object
      */
-    public Settings getSettings()
-    {
+    public Settings getSettings() {
         return settings;
     }
 
@@ -154,8 +149,7 @@ public class IRCService extends Service
      * will be called)
      */
     @Override
-    public void onStart(Intent intent, int startId)
-    {
+    public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         handleCommand(intent);
     }
@@ -169,8 +163,7 @@ public class IRCService extends Service
      * @return
      */
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             handleCommand(intent);
         }
@@ -187,8 +180,7 @@ public class IRCService extends Service
      *
      * @param intent
      */
-    private void handleCommand(Intent intent)
-    {
+    private void handleCommand(Intent intent) {
         if (ACTION_FOREGROUND.equals(intent.getAction())) {
             if (foreground) {
                 return; // XXX: We are already in foreground...
@@ -199,7 +191,7 @@ public class IRCService extends Service
             notification = new Notification(R.drawable.icon, getText(R.string.notification_running), System.currentTimeMillis());
 
             // The PendingIntent to launch our activity if the user selects this notification
-            Intent notifyIntent = new Intent(this, ServersActivity.class);
+            Intent notifyIntent = new Intent(this, MainActivity.class);
             notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
 
@@ -217,17 +209,16 @@ public class IRCService extends Service
     /**
      * Update notification and vibrate and/or flash a LED light if needed
      *
-     * @param text       The ticker text to display
-     * @param contentText       The text to display in the notification dropdown
-     * @param vibrate True if the device should vibrate, false otherwise
-     * @param sound True if the device should make sound, false otherwise
-     * @param light True if the device should flash a LED light, false otherwise
+     * @param text        The ticker text to display
+     * @param contentText The text to display in the notification dropdown
+     * @param vibrate     True if the device should vibrate, false otherwise
+     * @param sound       True if the device should make sound, false otherwise
+     * @param light       True if the device should flash a LED light, false otherwise
      */
-    private void updateNotification(String text, String contentText, boolean vibrate, boolean sound, boolean light)
-    {
+    private void updateNotification(String text, String contentText, boolean vibrate, boolean sound, boolean light) {
         if (foreground) {
             notification = new Notification(R.drawable.icon, text, System.currentTimeMillis());
-            Intent notifyIntent = new Intent(this, ServersActivity.class);
+            Intent notifyIntent = new Intent(this, MainActivity.class);
             notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
 
@@ -237,13 +228,13 @@ public class IRCService extends Service
                     for (Conversation conv : mentions.values()) {
                         sb.append(conv.getName() + " (" + conv.getNewMentions() + "), ");
                     }
-                    contentText = getString(R.string.notification_mentions, sb.substring(0, sb.length()-2));
+                    contentText = getString(R.string.notification_mentions, sb.substring(0, sb.length() - 2));
                 } else if (!connectedServerTitles.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     for (String title : connectedServerTitles) {
                         sb.append(title + ", ");
                     }
-                    contentText = getString(R.string.notification_connected, sb.substring(0, sb.length()-2));
+                    contentText = getString(R.string.notification_connected, sb.substring(0, sb.length() - 2));
                 } else {
                     contentText = getString(R.string.notification_not_connected);
                 }
@@ -260,10 +251,10 @@ public class IRCService extends Service
             }
 
             if (light) {
-                notification.ledARGB   = NOTIFICATION_LED_COLOR;
-                notification.ledOnMS   = NOTIFICATION_LED_ON_MS;
-                notification.ledOffMS  = NOTIFICATION_LED_OFF_MS;
-                notification.flags    |= Notification.FLAG_SHOW_LIGHTS;
+                notification.ledARGB = NOTIFICATION_LED_COLOR;
+                notification.ledOnMS = NOTIFICATION_LED_ON_MS;
+                notification.ledOffMS = NOTIFICATION_LED_OFF_MS;
+                notification.flags |= Notification.FLAG_SHOW_LIGHTS;
             }
 
             notification.number = newMentions;
@@ -283,13 +274,12 @@ public class IRCService extends Service
      * Notify the service of a new mention (updates the status bar notification)
      *
      * @param conversation The conversation where the new mention occurred
-     * @param msg The text of the new message
-     * @param vibrate Whether the notification should include vibration
-     * @param sound Whether the notification should include sound
-     * @param light Whether the notification should include a flashing LED light
+     * @param msg          The text of the new message
+     * @param vibrate      Whether the notification should include vibration
+     * @param sound        Whether the notification should include sound
+     * @param light        Whether the notification should include a flashing LED light
      */
-    public synchronized void addNewMention(int serverId, Conversation conversation, String msg, boolean vibrate, boolean sound, boolean light)
-    {
+    public synchronized void addNewMention(int serverId, Conversation conversation, String msg, boolean vibrate, boolean sound, boolean light) {
         if (conversation == null) {
             return;
         }
@@ -313,8 +303,7 @@ public class IRCService extends Service
      *
      * @param convTitle The title of the conversation whose new mentions have been read
      */
-    public synchronized void ackNewMentions(int serverId, String convTitle)
-    {
+    public synchronized void ackNewMentions(int serverId, String convTitle) {
         if (convTitle == null) {
             return;
         }
@@ -337,8 +326,7 @@ public class IRCService extends Service
      *
      * @param title The title of the newly connected server
      */
-    public synchronized void notifyConnected(String title)
-    {
+    public synchronized void notifyConnected(String title) {
         connectedServerTitles.add(title);
         updateNotification(getString(R.string.notification_connected, title), null, false, false, false);
     }
@@ -348,8 +336,7 @@ public class IRCService extends Service
      *
      * @param title The title of the disconnected server
      */
-    public synchronized void notifyDisconnected(String title)
-    {
+    public synchronized void notifyDisconnected(String title) {
         connectedServerTitles.remove(title);
         updateNotification(getString(R.string.notification_disconnected, title), null, false, false, false);
     }
@@ -359,8 +346,7 @@ public class IRCService extends Service
      * This is a wrapper around the new startForeground method, using the older
      * APIs if it is not available.
      */
-    private void startForegroundCompat(int id, Notification notification)
-    {
+    private void startForegroundCompat(int id, Notification notification) {
         // If we have the new startForeground API, then use it.
         if (mStartForeground != null) {
             mStartForegroundArgs[0] = Integer.valueOf(id);
@@ -376,7 +362,7 @@ public class IRCService extends Service
             // Fall back on the old API.
             try {
                 Method setForeground = getClass().getMethod("setForeground", mSetForegroudSignaure);
-                setForeground.invoke(this, new Object[] { true });
+                setForeground.invoke(this, new Object[]{true});
             } catch (NoSuchMethodException exception) {
                 // Should not happen
             } catch (InvocationTargetException e) {
@@ -393,8 +379,7 @@ public class IRCService extends Service
      * This is a wrapper around the new stopForeground method, using the older
      * APIs if it is not available.
      */
-    public void stopForegroundCompat(int id)
-    {
+    public void stopForegroundCompat(int id) {
         foreground = false;
 
         // If we have the new stopForeground API, then use it.
@@ -414,7 +399,7 @@ public class IRCService extends Service
 
             try {
                 Method setForeground = getClass().getMethod("setForeground", mSetForegroudSignaure);
-                setForeground.invoke(this, new Object[] { true });
+                setForeground.invoke(this, new Object[]{true});
             } catch (NoSuchMethodException exception) {
                 // Should not happen
             } catch (InvocationTargetException e) {
@@ -428,10 +413,9 @@ public class IRCService extends Service
     /**
      * Connect to the given server
      */
-    public void connect(final Server server)
-    {
+    public void connect(final Server server) {
         final int serverId = server.getId();
-        final int reconnectInterval = settings.getReconnectInterval()*60000;
+        final int reconnectInterval = settings.getReconnectInterval() * 60000;
         final IRCService service = this;
 
         if (settings.isReconnectEnabled()) {
@@ -441,7 +425,7 @@ public class IRCService extends Service
         new Thread("Connect thread for " + server.getTitle()) {
             @Override
             public void run() {
-                synchronized(alarmIntentsLock) {
+                synchronized (alarmIntentsLock) {
                     alarmIntents.remove(serverId);
                     ReconnectReceiver lastReceiver = alarmReceivers.remove(serverId);
                     if (lastReceiver != null) {
@@ -468,9 +452,9 @@ public class IRCService extends Service
 
                     if (server.getAuthentication().hasSaslCredentials()) {
                         connection.setSaslCredentials(
-                            server.getAuthentication().getSaslUsername(),
-                            server.getAuthentication().getSaslPassword()
-                            );
+                                server.getAuthentication().getSaslUsername(),
+                                server.getAuthentication().getSaslPassword()
+                        );
                     }
 
                     if (server.getPassword() != "") {
@@ -478,8 +462,7 @@ public class IRCService extends Service
                     } else {
                         connection.connect(server.getHost(), server.getPort());
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     server.setStatus(Status.DISCONNECTED);
 
                     Intent sIntent = Broadcast.createServerIntent(Broadcast.SERVER_UPDATE, serverId);
@@ -502,7 +485,7 @@ public class IRCService extends Service
                             PendingIntent pendingRIntent = PendingIntent.getBroadcast(service, 0, rIntent, 0);
                             AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
                             ReconnectReceiver receiver = new ReconnectReceiver(service, server);
-                            synchronized(alarmIntentsLock) {
+                            synchronized (alarmIntentsLock) {
                                 alarmReceivers.put(serverId, receiver);
                                 registerReceiver(receiver, new IntentFilter(Broadcast.SERVER_RECONNECT + serverId));
                                 am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + reconnectInterval, pendingRIntent);
@@ -516,10 +499,10 @@ public class IRCService extends Service
                     server.getConversation(ServerInfo.DEFAULT_NAME).addMessage(message);
 
                     Intent cIntent = Broadcast.createConversationIntent(
-                        Broadcast.CONVERSATION_MESSAGE,
-                        serverId,
-                        ServerInfo.DEFAULT_NAME
-                        );
+                            Broadcast.CONVERSATION_MESSAGE,
+                            serverId,
+                            ServerInfo.DEFAULT_NAME
+                    );
                     sendBroadcast(cIntent);
                 }
             }
@@ -532,8 +515,7 @@ public class IRCService extends Service
      * @param serverId
      * @return
      */
-    public synchronized IRCConnection getConnection(int serverId)
-    {
+    public synchronized IRCConnection getConnection(int serverId) {
         IRCConnection connection = connections.get(serverId);
 
         if (connection == null) {
@@ -549,18 +531,16 @@ public class IRCService extends Service
      *
      * @return true if there's a connection object, false otherwise
      */
-    public boolean hasConnection(int serverId)
-    {
+    public boolean hasConnection(int serverId) {
         return connections.containsKey(serverId);
     }
 
     /**
      * Check status of service
      */
-    public void checkServiceStatus()
-    {
+    public void checkServiceStatus() {
         boolean shutDown = true;
-        ArrayList<Server> mServers = Hermes.getInstance().getServersAsArrayList();
+        ArrayList<Server> mServers = Dialogue.getInstance().getServersAsArrayList();
         int mSize = mServers.size();
         Server server;
 
@@ -568,7 +548,7 @@ public class IRCService extends Service
             server = mServers.get(i);
             if (server.isDisconnected() && !server.mayReconnect()) {
                 int serverId = server.getId();
-                synchronized(this) {
+                synchronized (this) {
                     IRCConnection connection = connections.get(serverId);
                     if (connection != null) {
                         connection.dispose();
@@ -576,7 +556,7 @@ public class IRCService extends Service
                     connections.remove(serverId);
                 }
 
-                synchronized(alarmIntentsLock) {
+                synchronized (alarmIntentsLock) {
                     // XXX: alarmIntents can be null
                     PendingIntent pendingRIntent = alarmIntents.get(serverId);
                     if (pendingRIntent != null) {
@@ -606,15 +586,14 @@ public class IRCService extends Service
      * On Destroy
      */
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         // Make sure our notification is gone.
         if (foreground) {
             stopForegroundCompat(R.string.app_name);
         }
 
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        synchronized(alarmIntentsLock) {
+        synchronized (alarmIntentsLock) {
             for (PendingIntent pendingRIntent : alarmIntents.values()) {
                 am.cancel(pendingRIntent);
             }
@@ -635,8 +614,7 @@ public class IRCService extends Service
      * @return
      */
     @Override
-    public IRCBinder onBind(Intent intent)
-    {
+    public IRCBinder onBind(Intent intent) {
         return binder;
     }
 }

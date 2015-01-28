@@ -25,14 +25,12 @@ import android.view.ViewGroup;
  *
  * @author Sebastian Kaspari <s.kaspari@gmail.com>
  */
-public abstract class ViewPagerAdapter extends PagerAdapter
-{
+public abstract class ViewPagerAdapter extends PagerAdapter {
     /**
      * Get a View that displays the data at the specified position in the data set.
      *
      * @param position The position of the item within the adapter's data set of the item whose view we want.
      * @param pager    The ViewPager that this view will eventually be attached to.
-     *
      * @return A View corresponding to the data at the specified position.
      */
     public abstract View getView(int position, ViewPager pager);
@@ -43,7 +41,6 @@ public abstract class ViewPagerAdapter extends PagerAdapter
      *
      * @param view   Page View to check for association with object
      * @param object Object to check for association with view
-     *
      * @return true if view is associated with the key object object.
      */
     @Override
@@ -56,9 +53,8 @@ public abstract class ViewPagerAdapter extends PagerAdapter
      *
      * @param container The containing View in which the page will be shown.
      * @param position  The page position to be instantiated.
-     *
      * @return Returns an Object representing the new page. This does not need
-     *         to be a View, but can be some other container of the page.
+     * to be a View, but can be some other container of the page.
      */
     @Override
     public Object instantiateItem(ViewGroup container, int position) {

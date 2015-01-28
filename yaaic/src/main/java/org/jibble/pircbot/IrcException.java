@@ -16,10 +16,10 @@ package org.jibble.pircbot;
 /**
  * An IrcException class.
  *
- * @since   0.9
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @since 0.9
  */
 public class IrcException extends Exception {
     private static final long serialVersionUID = -3705541066912475928L;
@@ -32,5 +32,5 @@ public class IrcException extends Exception {
     public IrcException(String e) {
         super(e);
     }
-    
+
 }

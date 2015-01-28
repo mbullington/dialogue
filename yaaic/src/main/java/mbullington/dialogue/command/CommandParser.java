@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command;
 
+import android.content.Intent;
+
 import java.util.HashMap;
 
 import mbullington.dialogue.command.handler.AMsgHandler;
@@ -54,24 +56,20 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Intent;
-
 /**
  * Parser for commands
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class CommandParser
-{
+public class CommandParser {
+    private static CommandParser instance;
     private final HashMap<String, BaseHandler> commands;
     private final HashMap<String, String> aliases;
-    private static CommandParser instance;
 
     /**
      * Create a new CommandParser instance
      */
-    private CommandParser()
-    {
+    private CommandParser() {
         commands = new HashMap<String, BaseHandler>();
 
         // Commands
@@ -104,7 +102,7 @@ public class CommandParser
         aliases = new HashMap<String, String>();
 
         // Aliases
-        aliases.put("j","join");
+        aliases.put("j", "join");
         aliases.put("q", "query");
         aliases.put("h", "help");
         aliases.put("raw", "quote");
@@ -113,11 +111,10 @@ public class CommandParser
 
     /**
      * Get the global CommandParser instance
-     * 
+     *
      * @return
      */
-    public static synchronized CommandParser getInstance()
-    {
+    public static synchronized CommandParser getInstance() {
         if (instance == null) {
             instance = new CommandParser();
         }
@@ -127,46 +124,42 @@ public class CommandParser
 
     /**
      * Get the commands HashMap
-     * 
+     *
      * @return HashMap - command, commandHandler
      */
-    public HashMap<String, BaseHandler> getCommands()
-    {
+    public HashMap<String, BaseHandler> getCommands() {
         return commands;
     }
 
     /**
      * Get the command aliases HashMap
-     * 
+     *
      * @return HashMap - alias, command the alias belogs to
      */
-    public HashMap<String, String> getAliases()
-    {
+    public HashMap<String, String> getAliases() {
         return aliases;
     }
 
     /**
      * Is the given command a valid client command?
-     * 
+     *
      * @param command The (client) command to check (/command)
      * @return true if the command can be handled by the client, false otherwise
      */
-    public boolean isClientCommand(String command)
-    {
+    public boolean isClientCommand(String command) {
         return commands.containsKey(command.toLowerCase()) || aliases.containsKey(command.toLowerCase());
     }
 
     /**
      * Handle a client command
-     * 
-     * @param type Type of the command (/type param1 param2 ..)
-     * @param params The parameters of the command (0 is the command itself)
-     * @param server The current server
+     *
+     * @param type         Type of the command (/type param1 param2 ..)
+     * @param params       The parameters of the command (0 is the command itself)
+     * @param server       The current server
      * @param conversation The selected conversation
-     * @param service The service handling the connections
+     * @param service      The service handling the connections
      */
-    public void handleClientCommand(String type, String[] params, Server server, Conversation conversation, IRCService service)
-    {
+    public void handleClientCommand(String type, String[] params, Server server, Conversation conversation, IRCService service) {
         BaseHandler command = null;
 
         if (commands.containsKey(type.toLowerCase())) {
@@ -178,7 +171,7 @@ public class CommandParser
 
         try {
             command.execute(params, server, conversation, service);
-        } catch(CommandException e) {
+        } catch (CommandException e) {
             // Command could not be executed
             if (conversation != null) {
                 Message errorMessage = new Message(type + ": " + e.getMessage());
@@ -190,9 +183,9 @@ public class CommandParser
                 conversation.addMessage(usageMessage);
 
                 Intent intent = Broadcast.createConversationIntent(
-                    Broadcast.CONVERSATION_MESSAGE,
-                    server.getId(),
-                    conversation.getName()
+                        Broadcast.CONVERSATION_MESSAGE,
+                        server.getId(),
+                        conversation.getName()
                 );
 
                 service.sendBroadcast(intent);
@@ -202,18 +195,17 @@ public class CommandParser
 
     /**
      * Handle a server command
-     * 
-     * @param type Type of the command (/type param1 param2 ..)
-     * @param params The parameters of the command (0 is the command itself)
-     * @param server The current server
+     *
+     * @param type         Type of the command (/type param1 param2 ..)
+     * @param params       The parameters of the command (0 is the command itself)
+     * @param server       The current server
      * @param conversation The selected conversation
-     * @param service The service handling the connections
+     * @param service      The service handling the connections
      */
-    public void handleServerCommand(String type, String[] params, Server server, Conversation conversation, IRCService service)
-    {
+    public void handleServerCommand(String type, String[] params, Server server, Conversation conversation, IRCService service) {
         if (params.length > 1) {
             service.getConnection(server.getId()).sendRawLineViaQueue(
-                type.toUpperCase() + " " + BaseHandler.mergeParams(params)
+                    type.toUpperCase() + " " + BaseHandler.mergeParams(params)
             );
         } else {
             service.getConnection(server.getId()).sendRawLineViaQueue(type.toUpperCase());
@@ -222,11 +214,10 @@ public class CommandParser
 
     /**
      * Parse the given line
-     * 
+     *
      * @param line
      */
-    public void parse(String line, Server server, Conversation conversation, IRCService service)
-    {
+    public void parse(String line, Server server, Conversation conversation, IRCService service) {
         line = line.trim().substring(1); // cut the slash
         String[] params = line.split(" ");
         String type = params[0];

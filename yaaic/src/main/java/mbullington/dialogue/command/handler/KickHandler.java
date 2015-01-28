@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,23 +29,19 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /kick <nickname>
- * 
+ * <p/>
  * Kicks a user from the current channel
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class KickHandler extends BaseHandler
-{
+public class KickHandler extends BaseHandler {
     /**
      * Execute /kick
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (conversation.getType() != Conversation.TYPE_CHANNEL) {
             throw new CommandException(service.getString(R.string.only_usable_from_channel));
         }
@@ -59,8 +57,7 @@ public class KickHandler extends BaseHandler
      * Usage of /kick
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/kick <nickname>";
     }
 
@@ -68,8 +65,7 @@ public class KickHandler extends BaseHandler
      * Description of /kick
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_kick);
     }
 }

@@ -28,11 +28,11 @@ import mbullington.dialogue.R;
 
 /**
  * A server as we know it
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Server
-{
+public class Server {
+    private final LinkedHashMap<String, Conversation> conversations = new LinkedHashMap<String, Conversation>();
     private int id;
     private String title;
     private String host;
@@ -40,11 +40,8 @@ public class Server
     private String password;
     private String charset;
     private boolean useSSL = false;
-
     private Identity identity;
     private Authentication authentication;
-
-    private final LinkedHashMap<String, Conversation> conversations = new LinkedHashMap<String, Conversation>();
     private ArrayList<String> autoJoinChannels;
     private ArrayList<String> connectCommands;
 
@@ -56,40 +53,27 @@ public class Server
     /**
      * Create a new server object
      */
-    public Server()
-    {
+    public Server() {
         conversations.put(ServerInfo.DEFAULT_NAME, new ServerInfo());
         this.selected = ServerInfo.DEFAULT_NAME;
     }
 
     /**
-     * Set the identity for this server
-     * 
-     * @param identity The identity for this server
-     */
-    public void setIdentity(Identity identity)
-    {
-        this.identity = identity;
-    }
-
-    /**
-     * Set the authentication methods for this server
-     *
-     * @param authentication
-     */
-    public void setAuthentication(Authentication authentication)
-    {
-        this.authentication = authentication;
-    }
-
-    /**
      * Get the identity for this server
-     * 
+     *
      * @return identity
      */
-    public Identity getIdentity()
-    {
+    public Identity getIdentity() {
         return identity;
+    }
+
+    /**
+     * Set the identity for this server
+     *
+     * @param identity The identity for this server
+     */
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 
     /**
@@ -97,272 +81,253 @@ public class Server
      *
      * @return authentication
      */
-    public Authentication getAuthentication()
-    {
+    public Authentication getAuthentication() {
         return authentication;
     }
 
     /**
+     * Set the authentication methods for this server
+     *
+     * @param authentication
+     */
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
+    }
+
+    /**
      * Get unique id of server
-     * 
+     *
      * @return id
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
     /**
      * Set unique id of server
-     * 
+     *
      * @param id
      */
-    public void setId(int id)
-    {
+    public void setId(int id) {
         this.id = id;
     }
 
     /**
-     * Set password of the server
-     * 
-     * @param password The password of the server
-     */
-    public void setPassword(String password)
-    {
-        this.password = password;
-    }
-
-    /**
      * Get the password of the server
-     * 
+     *
      * @return The password of the server
      */
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
     /**
+     * Set password of the server
+     *
+     * @param password The password of the server
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
      * Get title of server
-     * 
+     *
      * @return
      */
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
     /**
      * Set title of server
-     * 
+     *
      * @param title
      */
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
     /**
      * Get hostname of server
-     * 
+     *
      * @return
      */
-    public String getHost()
-    {
+    public String getHost() {
         return host;
     }
 
     /**
      * Set hostname of server
-     * 
+     *
      * @param host
      */
-    public void setHost(String host)
-    {
+    public void setHost(String host) {
         this.host = host;
     }
 
     /**
      * Get port of server
-     * 
+     *
      * @return
      */
-    public int getPort()
-    {
+    public int getPort() {
         return port;
     }
 
     /**
      * Set port of server
-     * 
+     *
      * @param port
      */
-    public void setPort(int port)
-    {
+    public void setPort(int port) {
         this.port = port;
     }
 
     /**
-     * Set the charset to be used for all messages sent to the server
-     * 
-     * @param charset The name of the charset
+     * Get the charset to be used with this server
+     *
+     * @return String charset The name of the charset
      */
-    public void setCharset(String charset)
-    {
-        this.charset = charset;
+    public String getCharset() {
+        return charset;
     }
 
     /**
-     * Get the charset to be used with this server
-     * 
-     * @return String charset The name of the charset
+     * Set the charset to be used for all messages sent to the server
+     *
+     * @param charset The name of the charset
      */
-    public String getCharset()
-    {
-        return charset;
+    public void setCharset(String charset) {
+        this.charset = charset;
     }
 
     /**
      * Set if this connections needs to use ssl
      */
-    public void setUseSSL(boolean useSSL)
-    {
+    public void setUseSSL(boolean useSSL) {
         this.useSSL = useSSL;
     }
 
     /**
      * Does this connection use SSL?
-     * 
+     *
      * @return true if SSL should be used, false otherwise
      */
-    public boolean useSSL()
-    {
+    public boolean useSSL() {
         return useSSL;
     }
 
     /**
-     * Set connection status of server
-     * 
-     * @status See constants Status.*
-     */
-    public void setStatus(int status)
-    {
-        this.status = status;
-    }
-
-    /**
      * Get connection status of server
-     * 
+     *
      * @return See constants Status.*
      */
-    public int getStatus()
-    {
+    public int getStatus() {
         return status;
     }
 
     /**
-     * Set list of channels to auto join after connect
-     * 
-     * @param channels List of channel names
+     * Set connection status of server
+     *
+     * @status See constants Status.*
      */
-    public void setAutoJoinChannels(ArrayList<String> autoJoinChannels)
-    {
-        this.autoJoinChannels = autoJoinChannels;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     /**
      * Get list of channels to auto join after connect
-     * 
+     *
      * @return List of channel names
      */
-    public ArrayList<String> getAutoJoinChannels()
-    {
+    public ArrayList<String> getAutoJoinChannels() {
         return autoJoinChannels;
     }
 
     /**
-     * Set commands to execute after connect
-     * 
-     * @param commands List of commands
+     * Set list of channels to auto join after connect
+     *
+     * @param channels List of channel names
      */
-    public void setConnectCommands(ArrayList<String> connectCommands)
-    {
-        this.connectCommands = connectCommands;
+    public void setAutoJoinChannels(ArrayList<String> autoJoinChannels) {
+        this.autoJoinChannels = autoJoinChannels;
     }
 
     /**
      * Get commands to execute after connect
-     * 
+     *
      * @return List of commands
      */
-    public ArrayList<String> getConnectCommands()
-    {
+    public ArrayList<String> getConnectCommands() {
         return connectCommands;
     }
 
     /**
+     * Set commands to execute after connect
+     *
+     * @param commands List of commands
+     */
+    public void setConnectCommands(ArrayList<String> connectCommands) {
+        this.connectCommands = connectCommands;
+    }
+
+    /**
      * Is disconnected?
-     * 
+     *
      * @return true if the user is disconnected, false if the user is connected or currently connecting
      */
-    public boolean isDisconnected()
-    {
+    public boolean isDisconnected() {
         return status == Status.DISCONNECTED;
     }
 
     /**
      * Is connected?
-     * 
+     *
      * @return true if the user is (successfully) connected to this server, false otherwise
      */
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return status == Status.CONNECTED;
     }
 
     /**
      * Get all conversations
-     * 
+     *
      * @return
      */
-    public Collection<Conversation> getConversations()
-    {
+    public Collection<Conversation> getConversations() {
         return conversations.values();
     }
 
     /**
      * Get conversation by name
      */
-    public Conversation getConversation(String name)
-    {
+    public Conversation getConversation(String name) {
         return conversations.get(name.toLowerCase());
     }
 
     /**
      * Add a new conversation
-     * 
+     *
      * @param conversation The conversation to add
      */
-    public void addConversation(Conversation conversation)
-    {
+    public void addConversation(Conversation conversation) {
         conversations.put(conversation.getName().toLowerCase(), conversation);
     }
 
     /**
      * Removes a conversation by name
-     * 
+     *
      * @param name
      */
-    public void removeConversation(String name)
-    {
+    public void removeConversation(String name) {
         conversations.remove(name.toLowerCase());
     }
 
     /**
      * Remove all conversations
      */
-    public void clearConversations()
-    {
+    public void clearConversations() {
         conversations.clear();
 
         // reset defaults
@@ -371,32 +336,29 @@ public class Server
     }
 
     /**
-     * Set name of currently selected conversation
-     * 
-     * @param selected The name of the selected conversation
-     */
-    public void setSelectedConversation(String selected)
-    {
-        this.selected = selected;
-    }
-
-    /**
      * Get name of currently selected conversation
-     * 
+     *
      * @return The name of the selected conversation
      */
-    public String getSelectedConversation()
-    {
+    public String getSelectedConversation() {
         return selected;
     }
 
     /**
+     * Set name of currently selected conversation
+     *
+     * @param selected The name of the selected conversation
+     */
+    public void setSelectedConversation(String selected) {
+        this.selected = selected;
+    }
+
+    /**
      * Get names of the currently joined channels
-     * 
+     *
      * @return
      */
-    public ArrayList<String> getCurrentChannelNames()
-    {
+    public ArrayList<String> getCurrentChannelNames() {
         ArrayList<String> channels = new ArrayList<String>();
         Collection<Conversation> mConversations = conversations.values();
 
@@ -411,11 +373,10 @@ public class Server
 
     /**
      * Get icon for current server status
-     * 
+     *
      * @return int Status icon ressource
      */
-    public int getStatusIcon()
-    {
+    public int getStatusIcon() {
         switch (status) {
             case Status.CONNECTED:
                 return R.drawable.connected;
@@ -432,32 +393,28 @@ public class Server
     /**
      * Get whether a ConversationActivity for this server is currently in the foreground.
      */
-    public boolean getIsForeground()
-    {
+    public boolean getIsForeground() {
         return isForeground;
     }
 
     /**
      * Set whether a ConversationActivity for this server is currently in the foreground.
      */
-    public void setIsForeground(boolean isForeground)
-    {
+    public void setIsForeground(boolean isForeground) {
         this.isForeground = isForeground;
     }
 
     /**
      * Get whether a reconnect may be attempted if we're disconnected.
      */
-    public boolean mayReconnect()
-    {
+    public boolean mayReconnect() {
         return mayReconnect;
     }
 
     /**
      * Set whether a reconnect may be attempted if we're disconnected.
      */
-    public void setMayReconnect(boolean mayReconnect)
-    {
+    public void setMayReconnect(boolean mayReconnect) {
         this.mayReconnect = mayReconnect;
     }
 }

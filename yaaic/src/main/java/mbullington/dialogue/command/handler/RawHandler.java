@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,23 +29,19 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /raw <line>
- * 
+ * <p/>
  * Send a raw line to the server
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class RawHandler extends BaseHandler
-{
+public class RawHandler extends BaseHandler {
     /**
      * Execute /raw
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length > 1) {
             String line = BaseHandler.mergeParams(params);
             service.getConnection(server.getId()).sendRawLineViaQueue(line);
@@ -56,8 +54,7 @@ public class RawHandler extends BaseHandler
      * Usage of /raw
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/raw <line>";
     }
 
@@ -65,8 +62,7 @@ public class RawHandler extends BaseHandler
      * Description of /raw
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_raw);
     }
 }

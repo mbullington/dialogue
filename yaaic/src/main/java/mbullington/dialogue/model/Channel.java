@@ -22,20 +22,18 @@ package mbullington.dialogue.model;
 
 /**
  * An IRC channel (extends Conversation)
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Channel extends Conversation
-{
+public class Channel extends Conversation {
     private String topic;
 
     /**
      * Create a new channel object
-     * 
+     *
      * @param name of the channel
      */
-    public Channel(String name)
-    {
+    public Channel(String name) {
         super(name);
         this.topic = "";
     }
@@ -44,28 +42,25 @@ public class Channel extends Conversation
      * Get the type of this conversation
      */
     @Override
-    public int getType()
-    {
+    public int getType() {
         return Conversation.TYPE_CHANNEL;
     }
 
     /**
-     * Set the channel's topic
-     * 
-     * @param topic The topic of the channel
+     * Get the topic of the channel
+     *
+     * @return The channel's topic
      */
-    public void setTopic(String topic)
-    {
-        this.topic = topic;
+    public String getTopic() {
+        return topic;
     }
 
     /**
-     * Get the topic of the channel
-     * 
-     * @return The channel's topic
+     * Set the channel's topic
+     *
+     * @param topic The topic of the channel
      */
-    public String getTopic()
-    {
-        return topic;
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

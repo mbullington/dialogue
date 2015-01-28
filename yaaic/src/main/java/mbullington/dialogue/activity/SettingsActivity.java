@@ -20,25 +20,23 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
+
+import mbullington.dialogue.R;
 
 /**
  * Settings
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class SettingsActivity extends PreferenceActivity
-{
+public class SettingsActivity extends PreferenceActivity {
     /**
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
@@ -49,7 +47,7 @@ public class SettingsActivity extends PreferenceActivity
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() ==  android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             finish();
         }
 

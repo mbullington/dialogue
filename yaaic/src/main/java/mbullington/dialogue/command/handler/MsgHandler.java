@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -29,24 +32,19 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /msg <target> <message>
- * 
+ * <p/>
  * Send a message to a channel or user
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class MsgHandler extends BaseHandler
-{
+public class MsgHandler extends BaseHandler {
     /**
      * Execute /msg
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length > 2) {
             String text = BaseHandler.mergeParams(params, 2);
             service.getConnection(server.getId()).sendMessage(params[1], text);
@@ -58,9 +56,9 @@ public class MsgHandler extends BaseHandler
                 targetConversation.addMessage(message);
 
                 Intent intent = Broadcast.createConversationIntent(
-                    Broadcast.CONVERSATION_MESSAGE,
-                    server.getId(),
-                    targetConversation.getName()
+                        Broadcast.CONVERSATION_MESSAGE,
+                        server.getId(),
+                        targetConversation.getName()
                 );
 
                 service.sendBroadcast(intent);
@@ -74,8 +72,7 @@ public class MsgHandler extends BaseHandler
      * Usage of /msg
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/msg <target> <message>";
     }
 
@@ -83,8 +80,7 @@ public class MsgHandler extends BaseHandler
      * Description of /msg
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_msg);
     }
 }

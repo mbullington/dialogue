@@ -20,13 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.indicator;
 
-import mbullington.dialogue.adapter.ConversationPagerAdapter;
-import mbullington.dialogue.indicator.ConversationTitlePageIndicator.IndicatorStyle;
-import mbullington.dialogue.irc.IRCService;
-import mbullington.dialogue.model.Conversation;
-import mbullington.dialogue.model.Server;
-import mbullington.dialogue.utils.DisplayUtils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -36,6 +29,13 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import mbullington.dialogue.adapter.ConversationPagerAdapter;
+import mbullington.dialogue.indicator.ConversationTitlePageIndicator.IndicatorStyle;
+import mbullington.dialogue.irc.IRCService;
+import mbullington.dialogue.model.Conversation;
+import mbullington.dialogue.model.Server;
+import mbullington.dialogue.utils.DisplayUtils;
 
 /**
  * A ConversationIndicator is a group of a ConversationTitlePageIndicator in the
@@ -51,90 +51,89 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
     private View leftIndicatorView;
     private View rightIndicatorView;
 
-	private ConversationTitlePageIndicator titleIndicator;
-	private ConversationStateProvider stateProvider;
+    private ConversationTitlePageIndicator titleIndicator;
+    private ConversationStateProvider stateProvider;
 
-	/**
-	 * Create a new {@link ConversationIndicator} instance for the given context.
-	 *
-	 * @param context
-	 */
-	public ConversationIndicator(Context context) {
-		super(context);
+    /**
+     * Create a new {@link ConversationIndicator} instance for the given context.
+     *
+     * @param context
+     */
+    public ConversationIndicator(Context context) {
+        super(context);
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Create a new {@link ConversationIndicator} instance for the given context
-	 * and attribute set.
-	 *
-	 * @param context
-	 * @param attrs
-	 */
-	public ConversationIndicator(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    /**
+     * Create a new {@link ConversationIndicator} instance for the given context
+     * and attribute set.
+     *
+     * @param context
+     * @param attrs
+     */
+    public ConversationIndicator(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Initialize the indicator view.
-	 */
-	public void init() {
-		titleIndicator = new ConversationTitlePageIndicator(getContext());
-		titleIndicator.setLayoutParams(
-		    new LayoutParams(
-		        LayoutParams.WRAP_CONTENT,
-		        LayoutParams.WRAP_CONTENT,
-		        Gravity.CENTER
-	        )
-	    );
-
-		int indicatorWidth = DisplayUtils.convertToPixels(getContext(), 5);
-		int indicatorHeight = DisplayUtils.convertToPixels(getContext(), 5);
-
-		leftIndicatorView = new View(getContext());
-		leftIndicatorView.setLayoutParams(
-		    new LayoutParams(
-		        indicatorWidth,
-		        indicatorHeight,
-		        Gravity.LEFT | Gravity.BOTTOM
-	        )
-	    );
-		leftIndicatorView.setVisibility(View.INVISIBLE);
-
-		rightIndicatorView = new View(getContext());
-		rightIndicatorView.setLayoutParams(
-            new LayoutParams(
-                indicatorWidth,
-                indicatorHeight,
-                Gravity.RIGHT | Gravity.BOTTOM
-            )
+    /**
+     * Initialize the indicator view.
+     */
+    public void init() {
+        titleIndicator = new ConversationTitlePageIndicator(getContext());
+        titleIndicator.setLayoutParams(
+                new LayoutParams(
+                        LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER
+                )
         );
-		rightIndicatorView.setVisibility(View.INVISIBLE);
 
-		addView(leftIndicatorView);
-		addView(rightIndicatorView);
+        int indicatorWidth = DisplayUtils.convertToPixels(getContext(), 5);
+        int indicatorHeight = DisplayUtils.convertToPixels(getContext(), 5);
+
+        leftIndicatorView = new View(getContext());
+        leftIndicatorView.setLayoutParams(
+                new LayoutParams(
+                        indicatorWidth,
+                        indicatorHeight,
+                        Gravity.LEFT | Gravity.BOTTOM
+                )
+        );
+        leftIndicatorView.setVisibility(View.INVISIBLE);
+
+        rightIndicatorView = new View(getContext());
+        rightIndicatorView.setLayoutParams(
+                new LayoutParams(
+                        indicatorWidth,
+                        indicatorHeight,
+                        Gravity.RIGHT | Gravity.BOTTOM
+                )
+        );
+        rightIndicatorView.setVisibility(View.INVISIBLE);
+
+        addView(leftIndicatorView);
+        addView(rightIndicatorView);
         addView(titleIndicator);
-	}
+    }
 
-	/**
-	 * Set the {@link Server} this indicator is used for.
-	 *
-	 * @param server
-	 */
-	public void setServer(Server server) {
-	    this.server = server;
-	}
+    /**
+     * Set the {@link Server} this indicator is used for.
+     *
+     * @param server
+     */
+    public void setServer(Server server) {
+        this.server = server;
+    }
 
-	/**
-	 * Set typeface of title indicator.
-	 *
-	 * @param typeface
-	 */
-    public void setTypeface(Typeface typeface)
-    {
+    /**
+     * Set typeface of title indicator.
+     *
+     * @param typeface
+     */
+    public void setTypeface(Typeface typeface) {
         titleIndicator.setTypeface(typeface);
     }
 
@@ -143,8 +142,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param pager
      */
-    public void setViewPager(ViewPager pager)
-    {
+    public void setViewPager(ViewPager pager) {
         this.pager = pager;
 
         titleIndicator.setViewPager(pager);
@@ -158,8 +156,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param footerColor
      */
-    public void setFooterColor(int footerColor)
-    {
+    public void setFooterColor(int footerColor) {
         titleIndicator.setFooterColor(footerColor);
     }
 
@@ -168,8 +165,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param footerLineHeight
      */
-    public void setFooterLineHeight(float footerLineHeight)
-    {
+    public void setFooterLineHeight(float footerLineHeight) {
         titleIndicator.setFooterLineHeight(footerLineHeight);
     }
 
@@ -178,8 +174,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param footerTriangleHeight
      */
-    public void setFooterIndicatorHeight(float footerTriangleHeight)
-    {
+    public void setFooterIndicatorHeight(float footerTriangleHeight) {
         titleIndicator.setFooterIndicatorHeight(footerTriangleHeight);
     }
 
@@ -188,8 +183,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param indicatorStyle
      */
-    public void setFooterIndicatorStyle(IndicatorStyle indicatorStyle)
-    {
+    public void setFooterIndicatorStyle(IndicatorStyle indicatorStyle) {
         titleIndicator.setFooterIndicatorStyle(indicatorStyle);
     }
 
@@ -198,8 +192,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param selectedBold
      */
-    public void setSelectedBold(boolean selectedBold)
-    {
+    public void setSelectedBold(boolean selectedBold) {
         titleIndicator.setSelectedBold(selectedBold);
     }
 
@@ -208,8 +201,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param selectedColor
      */
-    public void setSelectedColor(int selectedColor)
-    {
+    public void setSelectedColor(int selectedColor) {
         titleIndicator.setSelectedColor(selectedColor);
     }
 
@@ -218,8 +210,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      *
      * @param textSize
      */
-    public void setTextSize(float textSize)
-    {
+    public void setTextSize(float textSize) {
         titleIndicator.setTextSize(textSize);
     }
 
@@ -227,8 +218,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      * On page selected: Update states of the indicators.
      */
     @Override
-    public void onPageSelected(int page)
-    {
+    public void onPageSelected(int page) {
         updateStateColors();
     }
 
@@ -242,7 +232,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
         Conversation conversation = adapter.getItem(page);
 
         Conversation previousConversation = server.getConversation(server.getSelectedConversation());
-        if (previousConversation != null)  {
+        if (previousConversation != null) {
             previousConversation.setStatus(Conversation.STATUS_DEFAULT);
         }
 
@@ -263,7 +253,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
             int color = stateProvider.getColorForLowerThan(page - 1);
             leftIndicatorView.setBackgroundColor(color);
             leftIndicatorView.setVisibility(
-                color == ConversationPagerAdapter.COLOR_NONE ? View.INVISIBLE : View.VISIBLE
+                    color == ConversationPagerAdapter.COLOR_NONE ? View.INVISIBLE : View.VISIBLE
             );
         } else {
             leftIndicatorView.setVisibility(View.INVISIBLE);
@@ -274,7 +264,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
 
             rightIndicatorView.setBackgroundColor(color);
             rightIndicatorView.setVisibility(
-                color == ConversationPagerAdapter.COLOR_NONE ? View.INVISIBLE : View.VISIBLE
+                    color == ConversationPagerAdapter.COLOR_NONE ? View.INVISIBLE : View.VISIBLE
             );
         } else {
             rightIndicatorView.setVisibility(View.INVISIBLE);
@@ -287,8 +277,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      * On scroll state of page changed.
      */
     @Override
-    public void onPageScrollStateChanged(int page)
-    {
+    public void onPageScrollStateChanged(int page) {
         // Not used.
     }
 
@@ -296,8 +285,7 @@ public class ConversationIndicator extends FrameLayout implements OnPageChangeLi
      * On page scrolled.
      */
     @Override
-    public void onPageScrolled(int arg0, float arg1, int arg2)
-    {
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
         // Not used.
     }
 }

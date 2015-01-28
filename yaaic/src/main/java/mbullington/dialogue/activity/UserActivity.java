@@ -20,10 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-import mbullington.dialogue.adapter.UserActionListAdapter;
-import mbullington.dialogue.model.Extra;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,21 +28,23 @@ import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import mbullington.dialogue.R;
+import mbullington.dialogue.adapter.UserActionListAdapter;
+import mbullington.dialogue.model.Extra;
+
 /**
  * UserActivity
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class UserActivity extends ListActivity
-{
+public class UserActivity extends ListActivity {
     private String nickname;
 
     /**
      * On create
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -61,8 +59,7 @@ public class UserActivity extends ListActivity
      * On action selected
      */
     @Override
-    protected void onListItemClick(ListView list, View view, int position, long id)
-    {
+    protected void onListItemClick(ListView list, View view, int position, long id) {
         Intent intent = new Intent();
         intent.putExtra(Extra.ACTION, (int) id);
         intent.putExtra(Extra.USER, nickname);

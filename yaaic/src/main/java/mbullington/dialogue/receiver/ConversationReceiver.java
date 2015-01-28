@@ -20,45 +20,42 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.receiver;
 
-import mbullington.dialogue.listener.ConversationListener;
-import mbullington.dialogue.model.Broadcast;
-import mbullington.dialogue.model.Extra;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import mbullington.dialogue.listener.ConversationListener;
+import mbullington.dialogue.model.Broadcast;
+import mbullington.dialogue.model.Extra;
+
 /**
  * A channel receiver for receiving channel updates
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ConversationReceiver extends BroadcastReceiver
-{
+public class ConversationReceiver extends BroadcastReceiver {
     private final ConversationListener listener;
     private final int serverId;
 
     /**
      * Create a new channel receiver
-     * 
+     *
      * @param serverId Only listen on channels of this server
      * @param listener
      */
-    public ConversationReceiver(int serverId, ConversationListener listener)
-    {
+    public ConversationReceiver(int serverId, ConversationListener listener) {
         this.listener = listener;
         this.serverId = serverId;
     }
 
     /**
      * On receive broadcast
-     * 
+     *
      * @param context
      * @param intent
      */
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
+    public void onReceive(Context context, Intent intent) {
         int serverId = intent.getExtras().getInt(Extra.SERVER);
         if (serverId != this.serverId) {
             return;

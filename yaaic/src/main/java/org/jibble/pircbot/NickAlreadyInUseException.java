@@ -19,10 +19,10 @@ package org.jibble.pircbot;
  * thrown when the PircBot attempts to join an IRC server
  * with a user name that is already in use.
  *
- * @since   0.9
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @since 0.9
  */
 public class NickAlreadyInUseException extends IrcException {
     private static final long serialVersionUID = -4724325464519465479L;
@@ -35,5 +35,5 @@ public class NickAlreadyInUseException extends IrcException {
     public NickAlreadyInUseException(String e) {
         super(e);
     }
-    
+
 }

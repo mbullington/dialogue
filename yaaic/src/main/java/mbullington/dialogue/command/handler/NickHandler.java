@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,21 +29,17 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /nick <nickname>
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class NickHandler extends BaseHandler
-{
+public class NickHandler extends BaseHandler {
     /**
      * Execute /nick
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length == 2) {
             service.getConnection(server.getId()).changeNick(params[1]);
         } else {
@@ -53,8 +51,7 @@ public class NickHandler extends BaseHandler
      * Usage of /nick
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/nick <nickname>";
     }
 
@@ -62,8 +59,7 @@ public class NickHandler extends BaseHandler
      * Description of /nick
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_nick);
     }
 }

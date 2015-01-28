@@ -20,20 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.Hermes;
-import mbullington.dialogue.db.Database;
-import mbullington.dialogue.exception.ValidationException;
-import mbullington.dialogue.model.Authentication;
-import mbullington.dialogue.model.Extra;
-import mbullington.dialogue.model.Identity;
-import mbullington.dialogue.model.Server;
-import mbullington.dialogue.model.Status;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -51,16 +37,29 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import mbullington.dialogue.Dialogue;
+import mbullington.dialogue.R;
+import mbullington.dialogue.db.Database;
+import mbullington.dialogue.exception.ValidationException;
+import mbullington.dialogue.model.Authentication;
+import mbullington.dialogue.model.Extra;
+import mbullington.dialogue.model.Identity;
+import mbullington.dialogue.model.Server;
+import mbullington.dialogue.model.Status;
+
 /**
  * Add a new server to the list
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class AddServerActivity extends ActionBarActivity implements OnClickListener
-{
-    private static final int REQUEST_CODE_CHANNELS       = 1;
-    private static final int REQUEST_CODE_COMMANDS       = 2;
-    private static final int REQUEST_CODE_ALIASES        = 3;
+public class AddServerActivity extends ActionBarActivity implements OnClickListener {
+    private static final int REQUEST_CODE_CHANNELS = 1;
+    private static final int REQUEST_CODE_COMMANDS = 2;
+    private static final int REQUEST_CODE_ALIASES = 3;
     private static final int REQUEST_CODE_AUTHENTICATION = 4;
 
     private Server server;
@@ -73,8 +72,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.serveradd);
@@ -162,8 +160,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      * On options menu requested
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         MenuInflater inflater = new MenuInflater(this);
@@ -176,14 +173,13 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      * On menu item selected
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
                 save();
                 return true;
 
-            case  android.R.id.home:
+            case android.R.id.home:
                 finish();
                 break;
         }
@@ -195,8 +191,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      * On activity result
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             return; // ignore everything else
         }
@@ -227,8 +222,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      * On click add server or cancel activity
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.aliases:
                 Intent aliasIntent = new Intent(this, AddAliasActivity.class);
@@ -281,7 +275,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
             }
             setResult(RESULT_OK);
             finish();
-        } catch(ValidationException e) {
+        } catch (ValidationException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -289,17 +283,16 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
     /**
      * Add server to database
      */
-    private void addServer()
-    {
+    private void addServer() {
         Database db = new Database(this);
 
         Identity identity = getIdentityFromView();
         long identityId = db.addIdentity(
-            identity.getNickname(),
-            identity.getIdent(),
-            identity.getRealName(),
-            identity.getAliases()
-            );
+                identity.getNickname(),
+                identity.getIdent(),
+                identity.getRealName(),
+                identity.getAliases()
+        );
 
         Server server = getServerFromView();
         server.setAuthentication(authentication);
@@ -316,14 +309,13 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
         server.setAutoJoinChannels(channels);
         server.setConnectCommands(commands);
 
-        Hermes.getInstance().addServer(server);
+        Dialogue.getInstance().addServer(server);
     }
 
     /**
      * Update server
      */
-    private void updateServer()
-    {
+    private void updateServer() {
         Database db = new Database(this);
 
         int serverId = this.server.getId();
@@ -335,12 +327,12 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
 
         Identity identity = getIdentityFromView();
         db.updateIdentity(
-            identityId,
-            identity.getNickname(),
-            identity.getIdent(),
-            identity.getRealName(),
-            identity.getAliases()
-            );
+                identityId,
+                identity.getNickname(),
+                identity.getIdent(),
+                identity.getRealName(),
+                identity.getAliases()
+        );
 
         db.setChannels(serverId, channels);
         db.setCommands(serverId, commands);
@@ -352,7 +344,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
         server.setAutoJoinChannels(channels);
         server.setConnectCommands(commands);
 
-        Hermes.getInstance().updateServer(server);
+        Dialogue.getInstance().updateServer(server);
     }
 
     /**
@@ -360,8 +352,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      *
      * @return The server object
      */
-    private Server getServerFromView()
-    {
+    private Server getServerFromView() {
         String title = ((EditText) findViewById(R.id.title)).getText().toString().trim();
         String host = ((EditText) findViewById(R.id.host)).getText().toString().trim();
         int port = Integer.parseInt(((EditText) findViewById(R.id.port)).getText().toString().trim());
@@ -389,8 +380,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      *
      * @return The identity object
      */
-    private Identity getIdentityFromView()
-    {
+    private Identity getIdentityFromView() {
         String nickname = ((EditText) findViewById(R.id.nickname)).getText().toString().trim();
         String ident = ((EditText) findViewById(R.id.ident)).getText().toString().trim();
         String realname = ((EditText) findViewById(R.id.realname)).getText().toString().trim();
@@ -410,8 +400,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      *
      * @throws ValidationException
      */
-    private void validateServer() throws ValidationException
-    {
+    private void validateServer() throws ValidationException {
         String title = ((EditText) findViewById(R.id.title)).getText().toString();
         String host = ((EditText) findViewById(R.id.host)).getText().toString();
         String port = ((EditText) findViewById(R.id.port)).getText().toString();
@@ -434,8 +423,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
 
         try {
             "".getBytes(charset);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new ValidationException(getResources().getString(R.string.validation_unsupported_charset));
         }
 
@@ -452,8 +440,7 @@ public class AddServerActivity extends ActionBarActivity implements OnClickListe
      *
      * @throws ValidationException
      */
-    private void validateIdentity() throws ValidationException
-    {
+    private void validateIdentity() throws ValidationException {
         String nickname = ((EditText) findViewById(R.id.nickname)).getText().toString();
         String ident = ((EditText) findViewById(R.id.ident)).getText().toString();
         String realname = ((EditText) findViewById(R.id.realname)).getText().toString();

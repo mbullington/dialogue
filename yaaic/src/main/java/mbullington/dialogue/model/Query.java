@@ -22,18 +22,16 @@ package mbullington.dialogue.model;
 
 /**
  * A query (a private chat between to users)
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Query extends Conversation
-{
+public class Query extends Conversation {
     /**
      * Create a new query
-     * 
+     *
      * @param name The user's nickname
      */
-    public Query(String name)
-    {
+    public Query(String name) {
         super(name);
     }
 
@@ -41,8 +39,7 @@ public class Query extends Conversation
      * Get the type of this conversation
      */
     @Override
-    public int getType()
-    {
+    public int getType() {
         return Conversation.TYPE_QUERY;
     }
 }

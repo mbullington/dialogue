@@ -34,7 +34,7 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
         android:theme="@style/Theme.Yaaic"
         android:allowBackup="true">
         <activity
-            android:name="mbullington.dialogue.activity.ServersActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="standard" >
             <intent-filter>

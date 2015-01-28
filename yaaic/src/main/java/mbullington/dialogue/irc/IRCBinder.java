@@ -20,17 +20,16 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.irc;
 
-import mbullington.dialogue.model.Server;
-
 import android.os.Binder;
+
+import mbullington.dialogue.model.Server;
 
 /**
  * Binder for service communication
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class IRCBinder extends Binder
-{
+public class IRCBinder extends Binder {
     private final IRCService service;
 
     /**
@@ -38,8 +37,7 @@ public class IRCBinder extends Binder
      *
      * @param service
      */
-    public IRCBinder(IRCService service)
-    {
+    public IRCBinder(IRCService service) {
         super();
 
         this.service = service;
@@ -47,11 +45,10 @@ public class IRCBinder extends Binder
 
     /**
      * Connect to given server
-     * 
+     *
      * @param server
      */
-    public void connect(final Server server)
-    {
+    public void connect(final Server server) {
         service.connect(server);
     }
 
@@ -60,8 +57,7 @@ public class IRCBinder extends Binder
      *
      * @return
      */
-    public IRCService getService()
-    {
+    public IRCService getService() {
         return service;
     }
 }

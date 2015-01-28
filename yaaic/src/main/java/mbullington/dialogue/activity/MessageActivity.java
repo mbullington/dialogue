@@ -20,34 +20,32 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-import mbullington.dialogue.model.Extra;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TextView;
 
+import mbullington.dialogue.R;
+import mbullington.dialogue.model.Extra;
+
 /**
  * Activity for single message view
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class MessageActivity extends Activity
-{
+public class MessageActivity extends Activity {
     /**
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.message);
 
         ((TextView) findViewById(R.id.message)).setText(
-            getIntent().getExtras().getString(Extra.MESSAGE)
+                getIntent().getExtras().getString(Extra.MESSAGE)
         );
     }
 }

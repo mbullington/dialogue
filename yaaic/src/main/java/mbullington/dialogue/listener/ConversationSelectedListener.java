@@ -20,6 +20,11 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.listener;
 
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.widget.TextView;
+
 import mbullington.dialogue.adapter.ConversationPagerAdapter;
 import mbullington.dialogue.indicator.ConversationIndicator;
 import mbullington.dialogue.irc.IRCService;
@@ -27,18 +32,12 @@ import mbullington.dialogue.model.Channel;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.widget.TextView;
-
 /**
  * Listener for conversation selections.
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ConversationSelectedListener implements OnPageChangeListener
-{
+public class ConversationSelectedListener implements OnPageChangeListener {
     private final Context context;
     private final Server server;
     private final TextView titleView;
@@ -51,28 +50,26 @@ public class ConversationSelectedListener implements OnPageChangeListener
      * @param server
      * @param titleView
      */
-    public ConversationSelectedListener(Context ctx, Server server, TextView titleView, ConversationPagerAdapter adapter, ConversationIndicator indicator)
-    {
-        this.context       = ctx;
-        this.server    = server;
+    public ConversationSelectedListener(Context ctx, Server server, TextView titleView, ConversationPagerAdapter adapter, ConversationIndicator indicator) {
+        this.context = ctx;
+        this.server = server;
         this.titleView = titleView;
         this.indicator = indicator;
-        this.adapter   = adapter;
+        this.adapter = adapter;
     }
 
     /**
      * On page has been selected.
      */
     @Override
-    public void onPageSelected(int position)
-    {
+    public void onPageSelected(int position) {
         Conversation conversation = adapter.getItem(position);
 
         if (conversation != null && conversation.getType() != Conversation.TYPE_SERVER) {
             StringBuilder sb = new StringBuilder();
             sb.append(server.getTitle() + " - " + conversation.getName());
-            if (conversation.getType() == Conversation.TYPE_CHANNEL && !((Channel)conversation).getTopic().equals("")) {
-                sb.append(" - " + ((Channel)conversation).getTopic());
+            if (conversation.getType() == Conversation.TYPE_CHANNEL && !((Channel) conversation).getTopic().equals("")) {
+                sb.append(" - " + ((Channel) conversation).getTopic());
             }
             titleView.setText(sb.toString());
         } else {
@@ -106,15 +103,13 @@ public class ConversationSelectedListener implements OnPageChangeListener
      * On scroll state of pager has been chanaged.
      */
     @Override
-    public void onPageScrollStateChanged(int state)
-    {
+    public void onPageScrollStateChanged(int state) {
     }
 
     /**
      * On page has been scrolled.
      */
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-    {
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
 }

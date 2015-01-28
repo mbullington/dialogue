@@ -25,8 +25,7 @@ package mbullington.dialogue.listener;
  *
  * @author Sebastian Kaspari
  */
-public interface ServerListener
-{
+public interface ServerListener {
     /**
      * On server status update (disconnected, connecting, connected)
      */

@@ -20,8 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -30,19 +28,19 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+import mbullington.dialogue.R;
+
 /**
  * About activity
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class AboutActivity extends Activity
-{
+public class AboutActivity extends Activity {
     /**
      * On activity getting created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);

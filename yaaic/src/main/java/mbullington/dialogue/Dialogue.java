@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -27,35 +29,43 @@ import java.util.Set;
 import mbullington.dialogue.db.Database;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Global Master Class :)
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Hermes
-{
-    public static Hermes instance;
+public class Dialogue {
+    public static Dialogue instance;
 
     private HashMap<Integer, Server> servers;
-    private boolean                  serversLoaded = false;
+    private boolean serversLoaded = false;
 
     /**
      * Private constructor, you may want to use static getInstance()
      */
-    private Hermes()
-    {
+    private Dialogue() {
         servers = new HashMap<Integer, Server>();
     }
 
     /**
+     * Get global Yaaic instance
+     *
+     * @return the global Yaaic instance
+     */
+    public static Dialogue getInstance() {
+        if (instance == null) {
+            instance = new Dialogue();
+        }
+
+        return instance;
+    }
+
+    /**
      * Load servers from database
-     * 
+     *
      * @param context
      */
-    public void loadServers(Context context)
-    {
+    public void loadServers(Context context) {
         if (!serversLoaded) {
             Database db = new Database(context);
             servers = db.getServers();
@@ -67,54 +77,36 @@ public class Hermes
     }
 
     /**
-     * Get global Yaaic instance
-     * 
-     * @return the global Yaaic instance
-     */
-    public static Hermes getInstance()
-    {
-        if (instance == null) {
-            instance = new Hermes();
-        }
-
-        return instance;
-    }
-
-    /**
      * Get server by id
-     * 
+     *
      * @return Server object with given unique id
      */
-    public Server getServerById(int serverId)
-    {
+    public Server getServerById(int serverId) {
         return servers.get(serverId);
     }
 
     /**
      * Remove server with given unique id from list
-     * 
+     *
      * @param serverId
      */
-    public void removeServerById(int serverId)
-    {
+    public void removeServerById(int serverId) {
         servers.remove(serverId);
     }
 
     /**
      * Set servers
-     * 
+     *
      * @param servers
      */
-    public void setServers(HashMap<Integer, Server> servers)
-    {
+    public void setServers(HashMap<Integer, Server> servers) {
         this.servers = servers;
     }
 
     /**
      * Add server to list
      */
-    public void addServer(Server server)
-    {
+    public void addServer(Server server) {
         if (!servers.containsKey(server.getId())) {
             servers.put(server.getId(), server);
         }
@@ -123,18 +115,16 @@ public class Hermes
     /**
      * Update a server in list
      */
-    public void updateServer(Server server)
-    {
+    public void updateServer(Server server) {
         servers.put(server.getId(), server);
     }
 
     /**
      * Get list of servers
-     * 
+     *
      * @return list of servers
      */
-    public ArrayList<Server> getServersAsArrayList()
-    {
+    public ArrayList<Server> getServersAsArrayList() {
         ArrayList<Server> serverList = new ArrayList<Server>();
 
         Set<Integer> mKeys = servers.keySet();

@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,21 +29,17 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /quit [<reason>]
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class QuitHandler extends BaseHandler
-{
+public class QuitHandler extends BaseHandler {
     /**
      * Execute /quit
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length == 1) {
             service.getConnection(server.getId()).quitServer();
         } else {
@@ -53,8 +51,7 @@ public class QuitHandler extends BaseHandler
      * Usage of /quit
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/quit [<reason>]";
     }
 
@@ -62,8 +59,7 @@ public class QuitHandler extends BaseHandler
      * Description of /quit
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_quit);
     }
 }

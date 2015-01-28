@@ -22,11 +22,10 @@ package mbullington.dialogue.listener;
 
 /**
  * Listener for conversations
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public interface ConversationListener
-{
+public interface ConversationListener {
     /**
      * On new conversation message for given target
      *

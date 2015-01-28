@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -29,24 +32,19 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /notice <nickname> <message>
- * 
+ * <p/>
  * Send a notice to an other user
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class NoticeHandler extends BaseHandler
-{
+public class NoticeHandler extends BaseHandler {
     /**
      * Execute /notice
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length > 2) {
             String text = BaseHandler.mergeParams(params);
 
@@ -55,9 +53,9 @@ public class NoticeHandler extends BaseHandler
             conversation.addMessage(message);
 
             Intent intent = Broadcast.createConversationIntent(
-                Broadcast.CONVERSATION_MESSAGE,
-                server.getId(),
-                conversation.getName()
+                    Broadcast.CONVERSATION_MESSAGE,
+                    server.getId(),
+                    conversation.getName()
             );
             service.sendBroadcast(intent);
 
@@ -71,8 +69,7 @@ public class NoticeHandler extends BaseHandler
      * Usage of /notice
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/notice <nickname> <message>";
     }
 
@@ -80,8 +77,7 @@ public class NoticeHandler extends BaseHandler
      * Description of /notice
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_notice);
     }
 }

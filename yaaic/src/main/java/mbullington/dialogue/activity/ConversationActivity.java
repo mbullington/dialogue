@@ -20,37 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.Hermes;
-import mbullington.dialogue.adapter.ConversationPagerAdapter;
-import mbullington.dialogue.adapter.MessageListAdapter;
-import mbullington.dialogue.command.CommandParser;
-import mbullington.dialogue.indicator.ConversationIndicator;
-import mbullington.dialogue.indicator.ConversationTitlePageIndicator.IndicatorStyle;
-import mbullington.dialogue.irc.IRCBinder;
-import mbullington.dialogue.irc.IRCConnection;
-import mbullington.dialogue.irc.IRCService;
-import mbullington.dialogue.listener.ConversationListener;
-import mbullington.dialogue.listener.ServerListener;
-import mbullington.dialogue.listener.SpeechClickListener;
-import mbullington.dialogue.model.Broadcast;
-import mbullington.dialogue.model.Conversation;
-import mbullington.dialogue.model.Extra;
-import mbullington.dialogue.model.Message;
-import mbullington.dialogue.model.Query;
-import mbullington.dialogue.model.Scrollback;
-import mbullington.dialogue.model.Server;
-import mbullington.dialogue.model.ServerInfo;
-import mbullington.dialogue.model.Settings;
-import mbullington.dialogue.model.Status;
-import mbullington.dialogue.model.User;
-import mbullington.dialogue.receiver.ConversationReceiver;
-import mbullington.dialogue.receiver.ServerReceiver;
-
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -82,51 +51,56 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import mbullington.dialogue.Dialogue;
+import mbullington.dialogue.R;
+import mbullington.dialogue.adapter.ConversationPagerAdapter;
+import mbullington.dialogue.adapter.MessageListAdapter;
+import mbullington.dialogue.command.CommandParser;
+import mbullington.dialogue.indicator.ConversationIndicator;
+import mbullington.dialogue.indicator.ConversationTitlePageIndicator.IndicatorStyle;
+import mbullington.dialogue.irc.IRCBinder;
+import mbullington.dialogue.irc.IRCConnection;
+import mbullington.dialogue.irc.IRCService;
+import mbullington.dialogue.listener.ConversationListener;
+import mbullington.dialogue.listener.ServerListener;
+import mbullington.dialogue.listener.SpeechClickListener;
+import mbullington.dialogue.model.Broadcast;
+import mbullington.dialogue.model.Conversation;
+import mbullington.dialogue.model.Extra;
+import mbullington.dialogue.model.Message;
+import mbullington.dialogue.model.Query;
+import mbullington.dialogue.model.Scrollback;
+import mbullington.dialogue.model.Server;
+import mbullington.dialogue.model.ServerInfo;
+import mbullington.dialogue.model.Settings;
+import mbullington.dialogue.model.Status;
+import mbullington.dialogue.model.User;
+import mbullington.dialogue.receiver.ConversationReceiver;
+import mbullington.dialogue.receiver.ServerReceiver;
+
 
 /**
  * The server view with a scrollable list of all channels
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ConversationActivity extends ActionBarActivity implements ServiceConnection, ServerListener, ConversationListener
-{
+public class ConversationActivity extends ActionBarActivity implements ServiceConnection, ServerListener, ConversationListener {
     public static final int REQUEST_CODE_SPEECH = 99;
 
     private static final int REQUEST_CODE_JOIN = 1;
     private static final int REQUEST_CODE_USERS = 2;
     private static final int REQUEST_CODE_USER = 3;
-    private static final int REQUEST_CODE_NICK_COMPLETION= 4;
-
-    private int serverId;
-    private Server server;
-    private IRCBinder binder;
-    private ConversationReceiver channelReceiver;
-    private ServerReceiver serverReceiver;
-
-    private ViewPager pager;
-    private ConversationIndicator indicator;
-    private ConversationPagerAdapter pagerAdapter;
-
-    private Scrollback scrollback;
-
-    // XXX: This is ugly. This is a buffer for a channel that should be joined after showing the
-    //      JoinActivity. As onActivityResult() is called before onResume() a "channel joined"
-    //      broadcast may get lost as the broadcast receivers are registered in onResume() but the
-    //      join command would be called in onActivityResult(). joinChannelBuffer will save the
-    //      channel name in onActivityResult() and run the join command in onResume().
-    private String joinChannelBuffer;
-
-    private int historySize;
-
-    private boolean reconnectDialogActive = false;
-
+    private static final int REQUEST_CODE_NICK_COMPLETION = 4;
     private final OnKeyListener inputKeyListener = new OnKeyListener() {
         /**
          * On key pressed (input line)
          */
         @Override
-        public boolean onKey(View view, int keyCode, KeyEvent event)
-        {
+        public boolean onKey(View view, int keyCode, KeyEvent event) {
             EditText input = (EditText) view;
 
             if (event.getAction() != KeyEvent.ACTION_DOWN) {
@@ -171,17 +145,33 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
             return false;
         }
     };
+    private int serverId;
+    private Server server;
+    private IRCBinder binder;
+    private ConversationReceiver channelReceiver;
+    private ServerReceiver serverReceiver;
+    private ViewPager pager;
+    private ConversationIndicator indicator;
+    private ConversationPagerAdapter pagerAdapter;
+    private Scrollback scrollback;
+    // XXX: This is ugly. This is a buffer for a channel that should be joined after showing the
+    //      JoinActivity. As onActivityResult() is called before onResume() a "channel joined"
+    //      broadcast may get lost as the broadcast receivers are registered in onResume() but the
+    //      join command would be called in onActivityResult(). joinChannelBuffer will save the
+    //      channel name in onActivityResult() and run the join command in onResume().
+    private String joinChannelBuffer;
+    private int historySize;
+    private boolean reconnectDialogActive = false;
 
     /**
      * On create
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         serverId = getIntent().getExtras().getInt("serverId");
-        server = Hermes.getInstance().getServerById(serverId);
+        server = Dialogue.getInstance().getServerById(serverId);
         Settings settings = new Settings(this);
 
         // Finish activity if server does not exist anymore - See #55
@@ -273,8 +263,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On resume
      */
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         // register the receivers as early as possible, otherwise we may loose a broadcast message
         channelReceiver = new ConversationReceiver(server.getId(), this);
         registerReceiver(channelReceiver, new IntentFilter(Broadcast.CONVERSATION_MESSAGE));
@@ -369,8 +358,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On Pause
      */
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
 
         server.setIsForeground(false);
@@ -388,8 +376,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On service connected
      */
     @Override
-    public void onServiceConnected(ComponentName name, IBinder service)
-    {
+    public void onServiceConnected(ComponentName name, IBinder service) {
         this.binder = (IRCBinder) service;
 
         // connect to irc server if connect has been requested
@@ -405,8 +392,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On service disconnected
      */
     @Override
-    public void onServiceDisconnected(ComponentName name)
-    {
+    public void onServiceDisconnected(ComponentName name) {
         this.binder = null;
     }
 
@@ -414,8 +400,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On options menu requested
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         // inflate from xml
@@ -431,7 +416,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case  android.R.id.home:
+            case android.R.id.home:
                 finish();
                 break;
 
@@ -449,8 +434,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
                 // Make sure we part a channel when closing the channel conversation
                 if (conversationToClose.getType() == Conversation.TYPE_CHANNEL) {
                     binder.getService().getConnection(serverId).partChannel(conversationToClose.getName());
-                }
-                else if (conversationToClose.getType() == Conversation.TYPE_QUERY) {
+                } else if (conversationToClose.getType() == Conversation.TYPE_QUERY) {
                     server.removeConversation(conversationToClose.getName());
                     onRemoveConversation(conversationToClose.getName());
                 } else {
@@ -470,8 +454,8 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
                             Extra.USERS,
                             binder.getService().getConnection(server.getId()).getUsersAsStringArray(
                                     conversationForUserList.getName()
-                                    )
-                            );
+                            )
+                    );
                     startActivityForResult(intent, REQUEST_CODE_USERS);
                 } else {
                     Toast.makeText(this, getResources().getString(R.string.only_usable_from_channel), Toast.LENGTH_SHORT).show();
@@ -487,8 +471,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      *
      * @return the server object
      */
-    public Server getServer()
-    {
+    public Server getServer() {
         return server;
     }
 
@@ -496,8 +479,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On conversation message
      */
     @Override
-    public void onConversationMessage(String target)
-    {
+    public void onConversationMessage(String target) {
         Conversation conversation = server.getConversation(target);
 
         if (conversation == null) {
@@ -508,15 +490,14 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
 
         MessageListAdapter adapter = pagerAdapter.getItemAdapter(target);
 
-        while(conversation.hasBufferedMessages()) {
+        while (conversation.hasBufferedMessages()) {
             Message message = conversation.pollBufferedMessage();
 
             if (adapter != null && message != null) {
                 adapter.addMessage(message);
                 int status;
 
-                switch (message.getType())
-                {
+                switch (message.getType()) {
                     case Message.TYPE_MISC:
                         status = Conversation.STATUS_MISC;
                         break;
@@ -536,8 +517,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On new conversation
      */
     @Override
-    public void onNewConversation(String target)
-    {
+    public void onNewConversation(String target) {
         createNewConversation(target);
 
         pager.setCurrentItem(pagerAdapter.getCount() - 1);
@@ -549,8 +529,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      *
      * @param target
      */
-    public void createNewConversation(String target)
-    {
+    public void createNewConversation(String target) {
         pagerAdapter.addConversation(server.getConversation(target));
     }
 
@@ -558,8 +537,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On conversation remove
      */
     @Override
-    public void onRemoveConversation(String target)
-    {
+    public void onRemoveConversation(String target) {
         int position = pagerAdapter.getPositionByName(target);
 
         if (position != -1) {
@@ -571,8 +549,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On topic change
      */
     @Override
-    public void onTopicChanged(String target)
-    {
+    public void onTopicChanged(String target) {
         // No implementation
     }
 
@@ -580,8 +557,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On server status update
      */
     @Override
-    public void onStatusUpdate()
-    {
+    public void onStatusUpdate() {
         EditText input = (EditText) findViewById(R.id.input);
 
         if (server.isConnected()) {
@@ -602,30 +578,30 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
                 reconnectDialogActive = true;
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(getResources().getString(R.string.reconnect_after_disconnect, server.getTitle()))
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (!server.isDisconnected()) {
-                            reconnectDialogActive = false;
-                            return;
-                        }
-                        binder.getService().getConnection(server.getId()).setAutojoinChannels(
-                                server.getCurrentChannelNames()
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (!server.isDisconnected()) {
+                                    reconnectDialogActive = false;
+                                    return;
+                                }
+                                binder.getService().getConnection(server.getId()).setAutojoinChannels(
+                                        server.getCurrentChannelNames()
                                 );
-                        server.setStatus(Status.CONNECTING);
-                        binder.connect(server);
-                        reconnectDialogActive = false;
-                    }
-                })
-                .setNegativeButton(getString(R.string.negative_button), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        server.setMayReconnect(false);
-                        reconnectDialogActive = false;
-                        dialog.cancel();
-                    }
-                });
+                                server.setStatus(Status.CONNECTING);
+                                binder.connect(server);
+                                reconnectDialogActive = false;
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.negative_button), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                server.setMayReconnect(false);
+                                reconnectDialogActive = false;
+                                dialog.cancel();
+                            }
+                        });
                 AlertDialog alert = builder.create();
                 alert.show();
             }
@@ -636,8 +612,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * On activity result
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
             // ignore other result codes
             return;
@@ -685,9 +660,9 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
 
                         while (
                                 nicknameWithoutPrefix.startsWith("@") ||
-                                nicknameWithoutPrefix.startsWith("+") ||
-                                nicknameWithoutPrefix.startsWith(".") ||
-                                nicknameWithoutPrefix.startsWith("%")
+                                        nicknameWithoutPrefix.startsWith("+") ||
+                                        nicknameWithoutPrefix.startsWith(".") ||
+                                        nicknameWithoutPrefix.startsWith("%")
                                 ) {
                             // Strip prefix(es) now
                             nicknameWithoutPrefix = nicknameWithoutPrefix.substring(1);
@@ -717,7 +692,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
                                             Broadcast.CONVERSATION_NEW,
                                             server.getId(),
                                             nicknameWithoutPrefix
-                                            );
+                                    );
                                     binder.getService().sendBroadcast(intent);
                                 }
                                 break;
@@ -809,9 +784,9 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
         String word = tokens[tokens.length - 1].toLowerCase();
         tokens[tokens.length - 1] = null;
 
-        int begin   = input.getSelectionStart();
-        int end     = input.getSelectionEnd();
-        int cursor  = Math.min(begin, end);
+        int begin = input.getSelectionStart();
+        int end = input.getSelectionEnd();
+        int cursor = Math.min(begin, end);
         int sel_end = Math.max(begin, end);
 
         boolean in_selection = (cursor != sel_end);
@@ -852,7 +827,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
         if (conversationForUserList.getType() == Conversation.TYPE_CHANNEL) {
             users = binder.getService().getConnection(server.getId()).getUsersAsStringArray(
                     conversationForUserList.getName()
-                    );
+            );
         }
 
         // go through users and add matches
@@ -870,7 +845,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
                 input.setSelection(cursor, sel_end);
                 insertNickCompletion(input, users[result.get(0).intValue()]);
             } else if (result.size() > 0) {
-                Intent intent  = new Intent(this, UsersActivity.class);
+                Intent intent = new Intent(this, UsersActivity.class);
                 String[] extra = new String[result.size()];
                 int i = 0;
 
@@ -889,11 +864,11 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * Insert a given nick completion into the input line
      *
      * @param input The input line widget, with the incomplete nick selected
-     * @param nick The completed nick
+     * @param nick  The completed nick
      */
     private void insertNickCompletion(EditText input, String nick) {
         int start = input.getSelectionStart();
-        int end  = input.getSelectionEnd();
+        int end = input.getSelectionEnd();
         nick = removeStatusChar(nick);
 
         if (start == 0) {
@@ -930,8 +905,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
      * @param nick
      * @return nick without statuschar
      */
-    private String removeStatusChar(String nick)
-    {
+    private String removeStatusChar(String nick) {
         /* Discard status characters */
         if (nick.startsWith("@") || nick.startsWith("+")
                 || nick.startsWith("%")) {

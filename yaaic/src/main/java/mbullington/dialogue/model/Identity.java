@@ -27,45 +27,31 @@ import java.util.List;
 
 /**
  * An identity containing a nickname, an ident and a real name
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Identity
-{
-    private String nickname;
+public class Identity {
     private final List<String> aliases = new ArrayList<String>();
+    private String nickname;
     private String ident;
     private String realname;
-
-    /**
-     * Set the nickname of this identity
-     * 
-     * @param nickname The nickname to be set
-     */
-    public void setNickname(String nickname)
-    {
-        this.nickname = nickname;
-    }
 
     /**
      * Get the nickname of this identity
      *
      * @return The nickname
      */
-    public String getNickname()
-    {
+    public String getNickname() {
         return nickname;
     }
 
     /**
-     * Set a collection of aliases for this identity
+     * Set the nickname of this identity
      *
-     * @param aliases
+     * @param nickname The nickname to be set
      */
-    public void setAliases(Collection<String> aliases)
-    {
-        this.aliases.clear();
-        this.aliases.addAll(aliases);
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
@@ -73,48 +59,53 @@ public class Identity
      *
      * @return
      */
-    public List<String> getAliases()
-    {
+    public List<String> getAliases() {
         return Collections.unmodifiableList(aliases);
     }
 
     /**
-     * Set the ident of this identity
-     * 
-     * @param ident The ident to be set
+     * Set a collection of aliases for this identity
+     *
+     * @param aliases
      */
-    public void setIdent(String ident)
-    {
-        this.ident = ident;
+    public void setAliases(Collection<String> aliases) {
+        this.aliases.clear();
+        this.aliases.addAll(aliases);
     }
 
     /**
      * Get the ident of this identity
-     * 
+     *
      * @return The identity
      */
-    public String getIdent()
-    {
+    public String getIdent() {
         return ident;
     }
 
     /**
-     * Set the real name of this identity
-     * 
-     * @param realname The real name to be set
+     * Set the ident of this identity
+     *
+     * @param ident The ident to be set
      */
-    public void setRealName(String realname)
-    {
-        this.realname = realname;
+    public void setIdent(String ident) {
+        this.ident = ident;
     }
 
     /**
      * Get the real name of this identity
-     * 
+     *
      * @return The realname
      */
-    public String getRealName()
-    {
+    public String getRealName() {
         return realname;
+    }
+
+    /**
+     * Set the real name of this identity
+     *
+     * @param realname The real name to be set
+     */
+    public void setRealName(String realname) {
+        this.realname = realname;
     }
 }

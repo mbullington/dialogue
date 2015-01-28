@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -28,23 +30,19 @@ import mbullington.dialogue.model.Channel;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /topic [<topic>]
- * 
+ * <p/>
  * Show the current topic or change the topic if a new topic is provided
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class TopicHandler extends BaseHandler
-{
+public class TopicHandler extends BaseHandler {
     /**
      * Execute /topic
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (conversation.getType() != Conversation.TYPE_CHANNEL) {
             throw new CommandException(service.getString(R.string.only_usable_from_channel));
         }
@@ -64,8 +62,7 @@ public class TopicHandler extends BaseHandler
      * Usage of /topic
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/topic [<topic>]";
     }
 
@@ -73,8 +70,7 @@ public class TopicHandler extends BaseHandler
      * Description of /topic
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_topic);
     }
 }

@@ -20,11 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import java.util.Arrays;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.model.Extra;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,19 +29,22 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 
+import java.util.Arrays;
+
+import mbullington.dialogue.R;
+import mbullington.dialogue.model.Extra;
+
 /**
  * User Activity - Shows a list of users in the current channel
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class UsersActivity extends ListActivity implements OnItemClickListener
-{
+public class UsersActivity extends ListActivity implements OnItemClickListener {
     /**
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -65,8 +63,7 @@ public class UsersActivity extends ListActivity implements OnItemClickListener
      * On user selected
      */
     @Override
-    public void onItemClick(AdapterView<?> list, View item, int position, long id)
-    {
+    public void onItemClick(AdapterView<?> list, View item, int position, long id) {
         Intent intent = new Intent();
         intent.putExtra(Extra.USER, (String) getListView().getAdapter().getItem(position));
         setResult(RESULT_OK, intent);

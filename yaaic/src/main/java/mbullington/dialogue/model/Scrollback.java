@@ -24,11 +24,10 @@ import java.util.LinkedList;
 
 /**
  * Class for handling the scrollback history
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Scrollback
-{
+public class Scrollback {
     public static final int MAX_HISTORY = 10;
 
     private final LinkedList<String> messages;
@@ -37,16 +36,14 @@ public class Scrollback
     /**
      * Create a new scrollback object
      */
-    public Scrollback()
-    {
+    public Scrollback() {
         messages = new LinkedList<String>();
     }
 
     /**
      * Add a message to the history
      */
-    public void addMessage(String message)
-    {
+    public void addMessage(String message) {
         messages.addLast(message);
 
         if (messages.size() > MAX_HISTORY) {
@@ -58,11 +55,10 @@ public class Scrollback
 
     /**
      * Go back in history
-     * 
+     *
      * @return
      */
-    public String goBack()
-    {
+    public String goBack() {
         if (pointer > 0) {
             pointer--;
         }
@@ -76,11 +72,10 @@ public class Scrollback
 
     /**
      * Go forward in history
-     * 
+     *
      * @return
      */
-    public String goForward()
-    {
+    public String goForward() {
         if (pointer < messages.size() - 1) {
             pointer++;
         } else {

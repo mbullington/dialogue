@@ -27,8 +27,7 @@ import android.content.Context;
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class DisplayUtils
-{
+public class DisplayUtils {
     private static float density = -1;
 
     /**

@@ -18,8 +18,6 @@
  */
 package mbullington.dialogue.indicator;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -42,12 +40,14 @@ import android.view.ViewConfiguration;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.R;
 
+import java.util.ArrayList;
+
 /**
  * A TitlePageIndicator is a PageIndicator which displays the title of left view
  * (if exist), the title of the current select view (centered) and the title of
  * the right view (if exist). When the user scrolls the ViewPager then titles are
  * also scrolled.
- *
+ * <p/>
  * Modified version to display the titles in different colors according to the
  * state of the page.
  */
@@ -70,38 +70,13 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
      * Title text used when no title is provided by the adapter.
      */
     private static final String EMPTY_TITLE = "";
-
-    /**
-     * Interface for a callback when the center item has been clicked.
-     */
-    public interface OnCenterItemClickListener {
-        /**
-         * Callback when the center item has been clicked.
-         *
-         * @param position Position of the current center item.
-         */
-        void onCenterItemClick(int position);
-    }
-
-    public enum IndicatorStyle {
-        None(0), Triangle(1), Underline(2);
-
-        public final int value;
-
-        private IndicatorStyle(int value) {
-            this.value = value;
-        }
-
-        public static IndicatorStyle fromValue(int value) {
-            for (IndicatorStyle style : IndicatorStyle.values()) {
-                if (style.value == value) {
-                    return style;
-                }
-            }
-            return null;
-        }
-    }
-
+    private static final int INVALID_POINTER = -1;
+    private int mActivePointerId = INVALID_POINTER;
+    private final Paint mPaintText = new Paint();
+    private final Path mPath = new Path();
+    private final Rect mBounds = new Rect();
+    private final Paint mPaintFooterLine = new Paint();
+    private final Paint mPaintFooterIndicator = new Paint();
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mListener;
     private PagerAdapter mPagerAdapter;
@@ -109,34 +84,24 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
     private int mCurrentPage = -1;
     private float mPageOffset;
     private int mScrollState;
-    private final Paint mPaintText = new Paint();
     private boolean mBoldText;
     private int mColorText;
     private int mColorSelected;
-    private final Path mPath = new Path();
-    private final Rect mBounds = new Rect();
-    private final Paint mPaintFooterLine = new Paint();
     private IndicatorStyle mFooterIndicatorStyle;
-    private final Paint mPaintFooterIndicator = new Paint();
     private float mFooterIndicatorHeight;
     private float mFooterIndicatorUnderlinePadding;
     private float mFooterPadding;
     private float mTitlePadding;
     private float mTopPadding;
-    /** Left and right side padding for not active view titles. */
+    /**
+     * Left and right side padding for not active view titles.
+     */
     private float mClipPadding;
     private float mFooterLineHeight;
-
-    private static final int INVALID_POINTER = -1;
-
     private int mTouchSlop;
     private float mLastMotionX = -1;
-    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
-
     private OnCenterItemClickListener mCenterItemClickListener;
-
-
     public ConversationTitlePageIndicator(Context context) {
         this(context, null);
     }
@@ -144,6 +109,7 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
     public ConversationTitlePageIndicator(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.vpiTitlePageIndicatorStyle);
     }
+
 
     public ConversationTitlePageIndicator(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -198,7 +164,6 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         final ViewConfiguration configuration = ViewConfiguration.get(context);
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
-
 
     public int getFooterColor() {
         return mPaintFooterLine.getColor();
@@ -311,13 +276,13 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         invalidate();
     }
 
+    public Typeface getTypeface() {
+        return mPaintText.getTypeface();
+    }
+
     public void setTypeface(Typeface typeface) {
         mPaintText.setTypeface(typeface);
         invalidate();
-    }
-
-    public Typeface getTypeface() {
-        return mPaintText.getTypeface();
     }
 
     /*
@@ -338,7 +303,7 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         }
 
         // mCurrentPage is -1 on first start and after orientation changed. If so, retrieve the correct index from viewpager.
-        if(mCurrentPage == -1 && mViewPager != null) {
+        if (mCurrentPage == -1 && mViewPager != null) {
             mCurrentPage = mViewPager.getCurrentItem();
         }
 
@@ -406,7 +371,7 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         }
         //Right views starting from the current position
         if (mCurrentPage < countMinusOne) {
-            for (int i = mCurrentPage + 1 ; i < count; i++) {
+            for (int i = mCurrentPage + 1; i < count; i++) {
                 Rect bound = bounds.get(i);
                 //If right side is outside the screen
                 if (bound.right > rightClip) {
@@ -439,16 +404,16 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
 
                 //Draw text as unselected
                 mPaintText.setColor(currentPage ? mColorText : mStateProvider.getColorAt(i));
-                if(currentPage && currentSelected) {
+                if (currentPage && currentSelected) {
                     //Fade out/in unselected text as the selected text fades in/out
-                    mPaintText.setAlpha(colorTextAlpha - (int)(colorTextAlpha * selectedPercent));
+                    mPaintText.setAlpha(colorTextAlpha - (int) (colorTextAlpha * selectedPercent));
                 }
                 canvas.drawText(pageTitle, 0, pageTitle.length(), bound.left, bound.bottom + mTopPadding, mPaintText);
 
                 //If we are within the selected bounds draw the selected text
                 if (currentPage && currentSelected) {
                     mPaintText.setColor(mColorSelected);
-                    mPaintText.setAlpha((int)((mColorSelected >>> 24) * selectedPercent));
+                    mPaintText.setAlpha((int) ((mColorSelected >>> 24) * selectedPercent));
                     canvas.drawText(pageTitle, 0, pageTitle.length(), bound.left, bound.bottom + mTopPadding, mPaintText);
                 }
             }
@@ -478,20 +443,20 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
 
                 Rect underlineBounds = bounds.get(page);
                 mPath.reset();
-                mPath.moveTo(underlineBounds.left  - mFooterIndicatorUnderlinePadding, height - mFooterLineHeight);
+                mPath.moveTo(underlineBounds.left - mFooterIndicatorUnderlinePadding, height - mFooterLineHeight);
                 mPath.lineTo(underlineBounds.right + mFooterIndicatorUnderlinePadding, height - mFooterLineHeight);
                 mPath.lineTo(underlineBounds.right + mFooterIndicatorUnderlinePadding, height - mFooterLineHeight - mFooterIndicatorHeight);
-                mPath.lineTo(underlineBounds.left  - mFooterIndicatorUnderlinePadding, height - mFooterLineHeight - mFooterIndicatorHeight);
+                mPath.lineTo(underlineBounds.left - mFooterIndicatorUnderlinePadding, height - mFooterLineHeight - mFooterIndicatorHeight);
                 mPath.close();
 
-                mPaintFooterIndicator.setAlpha((int)(0xFF * selectedPercent));
+                mPaintFooterIndicator.setAlpha((int) (0xFF * selectedPercent));
                 canvas.drawPath(mPath, mPaintFooterIndicator);
                 mPaintFooterIndicator.setAlpha(0xFF);
                 break;
 
             case None:
-            	// Nothing to do here.
-            	break;
+                // Nothing to do here.
+                break;
         }
     }
 
@@ -589,15 +554,13 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         }
 
         return true;
-    };
+    }
 
     /**
      * Set bounds for the right textView including clip padding.
      *
-     * @param curViewBound
-     *            current bounds.
-     * @param curViewWidth
-     *            width of the view.
+     * @param curViewBound current bounds.
+     * @param curViewWidth width of the view.
      */
     private void clipViewOnTheRight(Rect curViewBound, float curViewWidth, int right) {
         curViewBound.right = (int) (right - mClipPadding);
@@ -607,15 +570,15 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
     /**
      * Set bounds for the left textView including clip padding.
      *
-     * @param curViewBound
-     *            current bounds.
-     * @param curViewWidth
-     *            width of the view.
+     * @param curViewBound current bounds.
+     * @param curViewWidth width of the view.
      */
     private void clipViewOnTheLeft(Rect curViewBound, float curViewWidth, int left) {
         curViewBound.left = (int) (left + mClipPadding);
         curViewBound.right = (int) (mClipPadding + curViewWidth);
     }
+
+    ;
 
     /**
      * Calculate views bounds and scroll them according to the current index
@@ -633,7 +596,7 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
             Rect bounds = calcBounds(i, paint);
             int w = bounds.right - bounds.left;
             int h = bounds.bottom - bounds.top;
-            bounds.left = (int)(halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
+            bounds.left = (int) (halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
             bounds.right = bounds.left + w;
             bounds.top = 0;
             bounds.bottom = h;
@@ -770,14 +733,14 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
                 height += mFooterIndicatorHeight;
             }
         }
-        final int measuredHeight = (int)height;
+        final int measuredHeight = (int) height;
 
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState)state;
+        SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();
@@ -791,7 +754,57 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
         return savedState;
     }
 
+    private CharSequence getTitle(int i) {
+        CharSequence title = mPagerAdapter.getPageTitle(i);
+        if (title == null) {
+            title = EMPTY_TITLE;
+        }
+        return title.toString();
+    }
+
+    public enum IndicatorStyle {
+        None(0), Triangle(1), Underline(2);
+
+        public final int value;
+
+        private IndicatorStyle(int value) {
+            this.value = value;
+        }
+
+        public static IndicatorStyle fromValue(int value) {
+            for (IndicatorStyle style : IndicatorStyle.values()) {
+                if (style.value == value) {
+                    return style;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Interface for a callback when the center item has been clicked.
+     */
+    public interface OnCenterItemClickListener {
+        /**
+         * Callback when the center item has been clicked.
+         *
+         * @param position Position of the current center item.
+         */
+        void onCenterItemClick(int position);
+    }
+
     static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         int currentPage;
 
         public SavedState(Parcelable superState) {
@@ -808,25 +821,5 @@ public class ConversationTitlePageIndicator extends View implements PageIndicato
             super.writeToParcel(dest, flags);
             dest.writeInt(currentPage);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
-
-    private CharSequence getTitle(int i) {
-        CharSequence title = mPagerAdapter.getPageTitle(i);
-        if (title == null) {
-            title = EMPTY_TITLE;
-        }
-        return title.toString();
     }
 }

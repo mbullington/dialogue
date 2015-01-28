@@ -20,8 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import mbullington.dialogue.R;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,20 +28,19 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import mbullington.dialogue.R;
+
 /**
  * Small dialog to show an edittext for joining channels
- * 
- * @author Sebastian Kaspari <sebastian@yaaic.org>
  *
+ * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class JoinActivity extends Activity implements OnClickListener
-{
+public class JoinActivity extends Activity implements OnClickListener {
     /**
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.join);
@@ -57,8 +54,7 @@ public class JoinActivity extends Activity implements OnClickListener
      * On click
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         Intent intent = new Intent();
         intent.putExtra("channel", ((EditText) findViewById(R.id.channel)).getText().toString());
         setResult(RESULT_OK, intent);

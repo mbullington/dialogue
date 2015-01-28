@@ -20,11 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.adapter;
 
-import java.util.LinkedList;
-
-import mbullington.dialogue.model.Conversation;
-import mbullington.dialogue.model.Message;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.View;
@@ -32,25 +27,28 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.LinkedList;
+
+import mbullington.dialogue.model.Conversation;
+import mbullington.dialogue.model.Message;
+
 /**
  * Adapter for (channel) messages in a ListView
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class MessageListAdapter extends BaseAdapter
-{
+public class MessageListAdapter extends BaseAdapter {
     private final LinkedList<TextView> messages;
     private final Context context;
     private int historySize;
 
     /**
      * Create a new MessageAdapter
-     * 
+     *
      * @param channel
      * @param context
      */
-    public MessageListAdapter(Conversation conversation, Context context)
-    {
+    public MessageListAdapter(Conversation conversation, Context context) {
         LinkedList<TextView> messages = new LinkedList<TextView>();
 
         // Render channel name as first message in channel
@@ -61,7 +59,7 @@ public class MessageListAdapter extends BaseAdapter
         }
 
         // Optimization - cache field lookups
-        LinkedList<Message> mHistory =  conversation.getHistory();
+        LinkedList<Message> mHistory = conversation.getHistory();
         int mSize = mHistory.size();
 
         for (int i = 0; i < mSize; i++) {
@@ -79,11 +77,10 @@ public class MessageListAdapter extends BaseAdapter
 
     /**
      * Add a message to the list
-     * 
+     *
      * @param message
      */
-    public void addMessage(Message message)
-    {
+    public void addMessage(Message message) {
         messages.add(message.renderTextView(context));
 
         if (messages.size() > historySize) {
@@ -95,11 +92,10 @@ public class MessageListAdapter extends BaseAdapter
 
     /**
      * Add a list of messages to the list
-     * 
+     *
      * @param messages
      */
-    public void addBulkMessages(LinkedList<Message> messages)
-    {
+    public void addBulkMessages(LinkedList<Message> messages) {
         LinkedList<TextView> mMessages = this.messages;
         Context mContext = this.context;
         int mSize = messages.size();
@@ -117,50 +113,46 @@ public class MessageListAdapter extends BaseAdapter
 
     /**
      * Get number of items
-     * 
+     *
      * @return
      */
     @Override
-    public int getCount()
-    {
+    public int getCount() {
         return messages.size();
     }
 
     /**
      * Get item at given position
-     * 
+     *
      * @param position
      * @return
      */
     @Override
-    public TextView getItem(int position)
-    {
+    public TextView getItem(int position) {
         return messages.get(position);
     }
 
     /**
      * Get id of item at given position
-     * 
+     *
      * @param position
      * @return
      */
     @Override
-    public long getItemId(int position)
-    {
+    public long getItemId(int position) {
         return position;
     }
 
     /**
      * Get item view for the given position
-     * 
+     *
      * @param position
      * @param convertView
      * @param parent
      * @return
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent)
-    {
+    public View getView(int position, View convertView, ViewGroup parent) {
         return getItem(position);
     }
 

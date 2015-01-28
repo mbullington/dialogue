@@ -27,8 +27,7 @@ import android.provider.BaseColumns;
  *
  * @author Sebastian Kaspari <s.kaspari@googlemail.com>
  */
-public class AliasConstants implements BaseColumns
-{
+public class AliasConstants implements BaseColumns {
     public static final String TABLE_NAME = "aliases";
 
     // fields
@@ -39,9 +38,9 @@ public class AliasConstants implements BaseColumns
      * All fields of the table
      */
     public static final String[] ALL = {
-        _ID,
-        ALIAS,
-        IDENTITY,
+            _ID,
+            ALIAS,
+            IDENTITY,
     };
 
 }

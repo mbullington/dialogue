@@ -20,31 +20,29 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.listener;
 
-import mbullington.dialogue.activity.ConversationActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import mbullington.dialogue.activity.ConversationActivity;
+
 /**
  * OnClickListener for the Speech Recognition Button
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class SpeechClickListener implements OnClickListener
-{
+public class SpeechClickListener implements OnClickListener {
     private final Activity activity;
 
     /**
      * Create a new listener for speech button
-     * 
+     *
      * @param activity
      * @param input
      */
-    public SpeechClickListener(Activity activity)
-    {
+    public SpeechClickListener(Activity activity) {
         this.activity = activity;
     }
 
@@ -52,8 +50,7 @@ public class SpeechClickListener implements OnClickListener
      * On Click on speech button
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);

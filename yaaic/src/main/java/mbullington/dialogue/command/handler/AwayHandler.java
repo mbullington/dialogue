@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,23 +29,19 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /away [<reason>]
- * 
+ * <p/>
  * Sets you away
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class AwayHandler extends BaseHandler
-{
+public class AwayHandler extends BaseHandler {
     /**
      * Execute /away
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         service.getConnection(server.getId()).sendRawLineViaQueue("AWAY " + BaseHandler.mergeParams(params));
     }
 
@@ -51,8 +49,7 @@ public class AwayHandler extends BaseHandler
      * Get description of /away
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_away);
     }
 
@@ -60,8 +57,7 @@ public class AwayHandler extends BaseHandler
      * Get usage of /away
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/away [<reason>]";
     }
 }

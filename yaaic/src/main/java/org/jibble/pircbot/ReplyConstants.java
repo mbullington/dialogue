@@ -17,19 +17,19 @@ package org.jibble.pircbot;
 /**
  * This interface contains the values of all numeric replies specified
  * in section 6 of RFC 1459.  Refer to RFC 1459 for further information.
- *  <p>
+ * <p/>
  * If you override the onServerResponse method in the PircBot class,
  * you may find these constants useful when comparing the numeric
  * value of a given code.
- * 
- * @since   1.0.0
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ *
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @since 1.0.0
  */
 public interface ReplyConstants {
-    
-    
+
+
     // Error Replies.
     public static final int ERR_NOSUCHNICK = 401;
     public static final int ERR_NOSUCHSERVER = 402;
@@ -75,8 +75,8 @@ public interface ReplyConstants {
     public static final int ERR_NOOPERHOST = 491;
     public static final int ERR_UMODEUNKNOWNFLAG = 501;
     public static final int ERR_USERSDONTMATCH = 502;
-    
-    
+
+
     // Command Responses.
     public static final int RPL_TRACELINK = 200;
     public static final int RPL_TRACECONNECTING = 201;
@@ -153,8 +153,8 @@ public interface ReplyConstants {
     public static final int RPL_USERS = 393;
     public static final int RPL_ENDOFUSERS = 394;
     public static final int RPL_NOUSERS = 395;
-    
-    
+
+
     // Reserved Numerics.
     public static final int RPL_TRACECLASS = 209;
     public static final int RPL_STATSQLINE = 217;
@@ -172,5 +172,5 @@ public interface ReplyConstants {
     public static final int ERR_YOUWILLBEBANNED = 466;
     public static final int ERR_BADCHANMASK = 476;
     public static final int ERR_NOSERVICEHOST = 492;
-    
+
 }

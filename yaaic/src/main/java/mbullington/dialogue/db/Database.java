@@ -20,6 +20,13 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.db;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,30 +36,21 @@ import mbullington.dialogue.model.Identity;
 import mbullington.dialogue.model.Server;
 import mbullington.dialogue.model.Status;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
 /**
  * Database Helper for the servers and channels tables
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Database extends SQLiteOpenHelper
-{
+public class Database extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "servers.db";
     private static final int DATABASE_VERSION = 5;
 
     /**
      * Create a new helper for database access
-     * 
+     *
      * @param context
      */
-    public Database(Context context)
-    {
+    public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -60,52 +58,51 @@ public class Database extends SQLiteOpenHelper
      * Create all needed tables on first start
      */
     @Override
-    public void onCreate(SQLiteDatabase db)
-    {
+    public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + ServerConstants.TABLE_NAME + " ( "
-            + ServerConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ServerConstants.TITLE + " TEXT NOT NULL, "
-            + ServerConstants.HOST + " TEXT NOT NULL, "
-            + ServerConstants.PORT + " INTEGER, "
-            + ServerConstants.PASSWORD + " TEXT, "
-            + ServerConstants.AUTOCONNECT + " BOOLEAN, "
-            + ServerConstants.USE_SSL + " BOOLEAN, "
-            + ServerConstants.CHARSET + " TEXT, "
-            + ServerConstants.IDENTITY + " INTEGER, "
-            + ServerConstants.NICKSERV_PASSWORD + " TEXT, "
-            + ServerConstants.SASL_USERNAME + " TEXT, "
-            + ServerConstants.SASL_PASSWORD + " TEXT"
-            + ");"
+                        + ServerConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + ServerConstants.TITLE + " TEXT NOT NULL, "
+                        + ServerConstants.HOST + " TEXT NOT NULL, "
+                        + ServerConstants.PORT + " INTEGER, "
+                        + ServerConstants.PASSWORD + " TEXT, "
+                        + ServerConstants.AUTOCONNECT + " BOOLEAN, "
+                        + ServerConstants.USE_SSL + " BOOLEAN, "
+                        + ServerConstants.CHARSET + " TEXT, "
+                        + ServerConstants.IDENTITY + " INTEGER, "
+                        + ServerConstants.NICKSERV_PASSWORD + " TEXT, "
+                        + ServerConstants.SASL_USERNAME + " TEXT, "
+                        + ServerConstants.SASL_PASSWORD + " TEXT"
+                        + ");"
         );
 
         db.execSQL("CREATE TABLE " + ChannelConstants.TABLE_NAME + " ("
-            + ChannelConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ChannelConstants.NAME + " TEXT NOT NULL, "
-            + ChannelConstants.PASSWORD + " TEXT, "
-            + ChannelConstants.SERVER + " INTEGER"
-            + ");"
+                        + ChannelConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + ChannelConstants.NAME + " TEXT NOT NULL, "
+                        + ChannelConstants.PASSWORD + " TEXT, "
+                        + ChannelConstants.SERVER + " INTEGER"
+                        + ");"
         );
 
-        db.execSQL("CREATE TABLE " + IdentityConstants.TABLE_NAME +" ("
-            + IdentityConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + IdentityConstants.NICKNAME + " TEXT NOT NULL,"
-            + IdentityConstants.IDENT + " TEXT NOT NULL,"
-            + IdentityConstants.REALNAME + " TEXT NOT NULL"
-            + ");"
+        db.execSQL("CREATE TABLE " + IdentityConstants.TABLE_NAME + " ("
+                        + IdentityConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + IdentityConstants.NICKNAME + " TEXT NOT NULL,"
+                        + IdentityConstants.IDENT + " TEXT NOT NULL,"
+                        + IdentityConstants.REALNAME + " TEXT NOT NULL"
+                        + ");"
         );
 
         db.execSQL("CREATE TABLE " + CommandConstants.TABLE_NAME + " ("
-            + CommandConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + CommandConstants.COMMAND + " TEXT NOT NULL, "
-            + ChannelConstants.SERVER + " INTEGER"
-            + ");"
+                        + CommandConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + CommandConstants.COMMAND + " TEXT NOT NULL, "
+                        + ChannelConstants.SERVER + " INTEGER"
+                        + ");"
         );
 
         db.execSQL("CREATE TABLE " + AliasConstants.TABLE_NAME + " ("
-            + AliasConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + AliasConstants.ALIAS + " TEXT NOT NULL, "
-            + AliasConstants.IDENTITY + " INTEGER"
-            + ");"
+                        + AliasConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + AliasConstants.ALIAS + " TEXT NOT NULL, "
+                        + AliasConstants.IDENTITY + " INTEGER"
+                        + ");"
         );
     }
 
@@ -113,8 +110,7 @@ public class Database extends SQLiteOpenHelper
      * Migrate existing databases to
      */
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-    {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // XXX: Do not delete databases (release version)
 
         // db.execSQL("DROP TABLE IF EXISTS " + ServerConstants.TABLE_NAME + ";");
@@ -133,10 +129,10 @@ public class Database extends SQLiteOpenHelper
         if (oldVersion == 2) {
             // Add new commands table (copy&paste from onCreate())
             db.execSQL("CREATE TABLE " + CommandConstants.TABLE_NAME + " ("
-                + CommandConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + CommandConstants.COMMAND + " TEXT NOT NULL, "
-                + ChannelConstants.SERVER + " INTEGER"
-                + ");"
+                            + CommandConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            + CommandConstants.COMMAND + " TEXT NOT NULL, "
+                            + ChannelConstants.SERVER + " INTEGER"
+                            + ");"
             );
 
             oldVersion = 3;
@@ -144,10 +140,10 @@ public class Database extends SQLiteOpenHelper
 
         if (oldVersion == 3) {
             db.execSQL("CREATE TABLE " + AliasConstants.TABLE_NAME + " ("
-                + AliasConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + AliasConstants.ALIAS + " TEXT NOT NULL, "
-                + AliasConstants.IDENTITY + " INTEGER"
-                + ");"
+                            + AliasConstants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            + AliasConstants.ALIAS + " TEXT NOT NULL, "
+                            + AliasConstants.IDENTITY + " INTEGER"
+                            + ");"
             );
 
             oldVersion = 4;
@@ -163,12 +159,11 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Add a new server to the database
-     * 
+     *
      * @param server     The server to add.
      * @param identityId The id of the assigned identity
      */
-    public long addServer(Server server, int identityId)
-    {
+    public long addServer(Server server, int identityId) {
         ContentValues values = new ContentValues();
 
         values.put(ServerConstants.TITLE, server.getTitle());
@@ -190,13 +185,12 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Update the server record in the database
-     * 
+     *
      * @param serverId   The primary key of the server to update.
      * @param server     The server to update.
      * @param identityId The identity of the server record
      */
-    public void updateServer(int serverId, Server server, int identityId)
-    {
+    public void updateServer(int serverId, Server server, int identityId) {
         ContentValues values = new ContentValues();
 
         values.put(ServerConstants.TITLE, server.getTitle());
@@ -215,22 +209,21 @@ public class Database extends SQLiteOpenHelper
         values.put(ServerConstants.SASL_PASSWORD, authentication.getSaslPassword());
 
         this.getWritableDatabase().update(
-            ServerConstants.TABLE_NAME,
-            values,
-            ServerConstants._ID + " = " + serverId,
-            null
+                ServerConstants.TABLE_NAME,
+                values,
+                ServerConstants._ID + " = " + serverId,
+                null
         );
     }
 
     /**
      * Add a channel to the database
-     * 
+     *
      * @param serverId Unique id of server
-     * @param name Name of channel
+     * @param name     Name of channel
      * @param password Password to join (if needed)
      */
-    public void addChannel(int serverId, String name, String password)
-    {
+    public void addChannel(int serverId, String name, String password) {
         ContentValues values = new ContentValues();
 
         values.put(ChannelConstants.NAME, name);
@@ -242,17 +235,16 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Replace list of channels for the given server
-     * 
+     *
      * @param serverId Unique id of server
      * @param channels List of channel names
      */
-    public void setChannels(int serverId, ArrayList<String> channels)
-    {
+    public void setChannels(int serverId, ArrayList<String> channels) {
         // Remove old channels
         this.getWritableDatabase().delete(
-            ChannelConstants.TABLE_NAME,
-            ChannelConstants.SERVER + " = " + serverId,
-            null
+                ChannelConstants.TABLE_NAME,
+                ChannelConstants.SERVER + " = " + serverId,
+                null
         );
 
         // Add new channels
@@ -263,22 +255,21 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Get all commands to execute on connect
-     * 
+     *
      * @param serverId Unique id of server
      * @return List of commands
      */
-    public ArrayList<String> getCommandsByServerId(int serverId)
-    {
+    public ArrayList<String> getCommandsByServerId(int serverId) {
         ArrayList<String> commands = new ArrayList<String>();
 
         Cursor cursor = this.getReadableDatabase().query(
-            CommandConstants.TABLE_NAME,
-            CommandConstants.ALL,
-            CommandConstants.SERVER + " = " + serverId,
-            null,
-            null,
-            null,
-            null
+                CommandConstants.TABLE_NAME,
+                CommandConstants.ALL,
+                CommandConstants.SERVER + " = " + serverId,
+                null,
+                null,
+                null,
+                null
         );
 
         while (cursor.moveToNext()) {
@@ -293,12 +284,11 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Add a command to a server
-     * 
+     *
      * @param serverId Unique id of server
-     * @param command The command to execute after connect
+     * @param command  The command to execute after connect
      */
-    public void addCommand(int serverId, String command)
-    {
+    public void addCommand(int serverId, String command) {
         ContentValues values = new ContentValues();
 
         values.put(CommandConstants.COMMAND, command);
@@ -309,17 +299,16 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Replace list of commands for the given server
-     * 
+     *
      * @param serverId Unique id of server
      * @param commands List of commands to execute after connect
      */
-    public void setCommands(int serverId, ArrayList<String> commands)
-    {
+    public void setCommands(int serverId, ArrayList<String> commands) {
         // Remove old commands
         this.getWritableDatabase().delete(
-            CommandConstants.TABLE_NAME,
-            CommandConstants.SERVER + " = " + serverId,
-            null
+                CommandConstants.TABLE_NAME,
+                CommandConstants.SERVER + " = " + serverId,
+                null
         );
 
         // Add new commands
@@ -330,21 +319,20 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Get all servers from database
-     * 
+     *
      * @return
      */
-    public HashMap<Integer, Server> getServers()
-    {
+    public HashMap<Integer, Server> getServers() {
         HashMap<Integer, Server> servers = new HashMap<Integer, Server>();
 
         Cursor cursor = this.getReadableDatabase().query(
-            ServerConstants.TABLE_NAME,
-            ServerConstants.ALL,
-            null,
-            null,
-            null,
-            null,
-            ServerConstants.TITLE + " ASC"
+                ServerConstants.TABLE_NAME,
+                ServerConstants.ALL,
+                null,
+                null,
+                null,
+                null,
+                ServerConstants.TITLE + " ASC"
         );
 
         while (cursor.moveToNext()) {
@@ -356,18 +344,17 @@ public class Database extends SQLiteOpenHelper
         return servers;
     }
 
-    public Server getServerById(int serverId)
-    {
+    public Server getServerById(int serverId) {
         Server server = null;
 
         Cursor cursor = this.getReadableDatabase().query(
-            ServerConstants.TABLE_NAME,
-            ServerConstants.ALL,
-            ServerConstants._ID + " = " + serverId,
-            null,
-            null,
-            null,
-            ServerConstants.TITLE + " ASC"
+                ServerConstants.TABLE_NAME,
+                ServerConstants.ALL,
+                ServerConstants._ID + " = " + serverId,
+                null,
+                null,
+                null,
+                ServerConstants.TITLE + " ASC"
         );
 
         if (cursor.moveToNext()) {
@@ -381,22 +368,21 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Check if the given server title is currently used
-     * 
+     *
      * @param title The server title
      * @return true if there's a server with this title, false otherwise
      */
-    public boolean isTitleUsed(String title)
-    {
+    public boolean isTitleUsed(String title) {
         boolean isTitleUsed = false;
 
         Cursor cursor = this.getReadableDatabase().query(
-            ServerConstants.TABLE_NAME,
-            ServerConstants.ALL,
-            ServerConstants.TITLE + " = " + DatabaseUtils.sqlEscapeString(title),
-            null,
-            null,
-            null,
-            null
+                ServerConstants.TABLE_NAME,
+                ServerConstants.ALL,
+                ServerConstants.TITLE + " = " + DatabaseUtils.sqlEscapeString(title),
+                null,
+                null,
+                null,
+                null
         );
 
         if (cursor.moveToNext()) {
@@ -410,11 +396,11 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Populate a server object from the given database cursor
+     *
      * @param cursor
      * @return
      */
-    private Server populateServer(Cursor cursor)
-    {
+    private Server populateServer(Cursor cursor) {
         Server server = new Server();
 
         server.setTitle(cursor.getString(cursor.getColumnIndex((ServerConstants.TITLE))));
@@ -454,40 +440,38 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Get all servers with autoconnect enabled
-     * 
+     *
      * @return
      */
-    public Cursor getAutoConnectServers()
-    {
+    public Cursor getAutoConnectServers() {
         return this.getReadableDatabase().query(
-            ServerConstants.TABLE_NAME,
-            ServerConstants.ALL,
-            ServerConstants.AUTOCONNECT + " = 1",
-            null,
-            null,
-            null,
-            ServerConstants.TITLE + " ASC"
+                ServerConstants.TABLE_NAME,
+                ServerConstants.ALL,
+                ServerConstants.AUTOCONNECT + " = 1",
+                null,
+                null,
+                null,
+                ServerConstants.TITLE + " ASC"
         );
     }
 
     /**
      * Get all channels of server
-     * 
+     *
      * @param server Unique id of server
      * @return list of channel names
      */
-    public ArrayList<String> getChannelsByServerId(int serverId)
-    {
+    public ArrayList<String> getChannelsByServerId(int serverId) {
         ArrayList<String> channels = new ArrayList<String>();
 
         Cursor cursor = this.getReadableDatabase().query(
-            ChannelConstants.TABLE_NAME,
-            ChannelConstants.ALL,
-            ChannelConstants.SERVER + " = " + serverId,
-            null,
-            null,
-            null,
-            ChannelConstants.NAME + " ASC"
+                ChannelConstants.TABLE_NAME,
+                ChannelConstants.ALL,
+                ChannelConstants.SERVER + " = " + serverId,
+                null,
+                null,
+                null,
+                ChannelConstants.NAME + " ASC"
         );
 
         while (cursor.moveToNext()) {
@@ -502,29 +486,27 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Remove server from database by unique id
-     * 
+     *
      * @param title
      */
-    public void removeServerById(int serverId)
-    {
+    public void removeServerById(int serverId) {
         // XXX: Workaround: Remove identity assigned to this server
         //      until we have some kind of identity manager
         int identityId = this.getIdentityIdByServerId(serverId);
         if (identityId != -1) {
             deleteAliases(identityId);
             this.getWritableDatabase().execSQL(
-                "DELETE FROM " + IdentityConstants.TABLE_NAME + " WHERE " + IdentityConstants._ID + " = " + identityId + ";"
+                    "DELETE FROM " + IdentityConstants.TABLE_NAME + " WHERE " + IdentityConstants._ID + " = " + identityId + ";"
             );
         }
 
         // Now delete the server entry
         this.getWritableDatabase().execSQL(
-            "DELETE FROM " + ServerConstants.TABLE_NAME + " WHERE " + ServerConstants._ID + " = " + serverId + ";"
+                "DELETE FROM " + ServerConstants.TABLE_NAME + " WHERE " + ServerConstants._ID + " = " + serverId + ";"
         );
     }
 
-    protected void setAliases(long identityId, List<String> aliases)
-    {
+    protected void setAliases(long identityId, List<String> aliases) {
         deleteAliases(identityId);
 
         ContentValues values = new ContentValues();
@@ -537,25 +519,23 @@ public class Database extends SQLiteOpenHelper
         }
     }
 
-    protected void deleteAliases(long identityId)
-    {
+    protected void deleteAliases(long identityId) {
         getWritableDatabase().execSQL(
-            "DELETE FROM " + AliasConstants.TABLE_NAME + " WHERE " + AliasConstants.IDENTITY + " = " + identityId
+                "DELETE FROM " + AliasConstants.TABLE_NAME + " WHERE " + AliasConstants.IDENTITY + " = " + identityId
         );
     }
 
-    protected List<String> getAliasesByIdentityId(long identityId)
-    {
+    protected List<String> getAliasesByIdentityId(long identityId) {
         List<String> aliases = new ArrayList<String>();
 
         Cursor cursor = this.getReadableDatabase().query(
-            AliasConstants.TABLE_NAME,
-            AliasConstants.ALL,
-            AliasConstants.IDENTITY + " = " + identityId,
-            null,
-            null,
-            null,
-            null
+                AliasConstants.TABLE_NAME,
+                AliasConstants.ALL,
+                AliasConstants.IDENTITY + " = " + identityId,
+                null,
+                null,
+                null,
+                null
         );
 
         while (cursor.moveToNext()) {
@@ -568,15 +548,14 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Add a new identity
-     * 
+     *
      * @param identityId
      * @param nickname
      * @param ident
      * @param realname
      * @param aliases
      */
-    public long addIdentity(String nickname, String ident, String realname, List<String> aliases)
-    {
+    public long addIdentity(String nickname, String ident, String realname, List<String> aliases) {
         ContentValues values = new ContentValues();
 
         values.put(IdentityConstants.NICKNAME, nickname);
@@ -592,14 +571,13 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Update the identity with the given id
-     * 
+     *
      * @param identityId
      * @param nickname
      * @param ident
      * @param realname
      */
-    public void updateIdentity(int identityId, String nickname, String ident, String realname, List<String> aliases)
-    {
+    public void updateIdentity(int identityId, String nickname, String ident, String realname, List<String> aliases) {
         ContentValues values = new ContentValues();
 
         values.put(IdentityConstants.NICKNAME, nickname);
@@ -607,10 +585,10 @@ public class Database extends SQLiteOpenHelper
         values.put(IdentityConstants.REALNAME, realname);
 
         this.getWritableDatabase().update(
-            IdentityConstants.TABLE_NAME,
-            values,
-            IdentityConstants._ID + " = " + identityId,
-            null
+                IdentityConstants.TABLE_NAME,
+                values,
+                IdentityConstants._ID + " = " + identityId,
+                null
         );
 
         setAliases(identityId, aliases);
@@ -618,22 +596,21 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Get an identity by its id
-     * 
+     *
      * @param identityId
      * @return
      */
-    public Identity getIdentityById(int identityId)
-    {
+    public Identity getIdentityById(int identityId) {
         Identity identity = null;
 
         Cursor cursor = this.getReadableDatabase().query(
-            IdentityConstants.TABLE_NAME,
-            IdentityConstants.ALL,
-            IdentityConstants._ID + "=" + identityId,
-            null,
-            null,
-            null,
-            null
+                IdentityConstants.TABLE_NAME,
+                IdentityConstants.ALL,
+                IdentityConstants._ID + "=" + identityId,
+                null,
+                null,
+                null,
+                null
         );
 
         if (cursor.moveToNext()) {
@@ -653,22 +630,21 @@ public class Database extends SQLiteOpenHelper
 
     /**
      * Get a server by its id
-     * 
+     *
      * @param serverId
      * @return
      */
-    public int getIdentityIdByServerId(int serverId)
-    {
+    public int getIdentityIdByServerId(int serverId) {
         int identityId = -1;
 
         Cursor cursor = this.getReadableDatabase().query(
-            ServerConstants.TABLE_NAME,
-            ServerConstants.ALL,
-            ServerConstants._ID + " = " + serverId,
-            null,
-            null,
-            null,
-            null
+                ServerConstants.TABLE_NAME,
+                ServerConstants.ALL,
+                ServerConstants._ID + " = " + serverId,
+                null,
+                null,
+                null,
+                null
         );
 
         if (cursor.moveToNext()) {

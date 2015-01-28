@@ -20,6 +20,9 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -28,24 +31,19 @@ import mbullington.dialogue.model.Broadcast;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /close
- * 
+ * <p/>
  * Closes the current window
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class CloseHandler extends BaseHandler
-{
+public class CloseHandler extends BaseHandler {
     /**
      * Execute /close
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (conversation.getType() == Conversation.TYPE_SERVER) {
             throw new CommandException(service.getString(R.string.close_server_window));
         }
@@ -58,9 +56,9 @@ public class CloseHandler extends BaseHandler
                 server.removeConversation(conversation.getName());
 
                 Intent intent = Broadcast.createConversationIntent(
-                    Broadcast.CONVERSATION_REMOVE,
-                    server.getId(),
-                    conversation.getName()
+                        Broadcast.CONVERSATION_REMOVE,
+                        server.getId(),
+                        conversation.getName()
                 );
                 service.sendBroadcast(intent);
             }
@@ -71,8 +69,7 @@ public class CloseHandler extends BaseHandler
      * Usage of /close
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/close";
     }
 
@@ -80,8 +77,7 @@ public class CloseHandler extends BaseHandler
      * Description of /close
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_close);
     }
 }

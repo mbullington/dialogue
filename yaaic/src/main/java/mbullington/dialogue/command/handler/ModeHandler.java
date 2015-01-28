@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,23 +29,19 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /mode <channel> <mode>
- * 
+ * <p/>
  * Set or remove channel modes
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class ModeHandler extends BaseHandler
-{
+public class ModeHandler extends BaseHandler {
     /**
      * Execute /mode
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (params.length > 2) {
             String modes = BaseHandler.mergeParams(params, 2);
 
@@ -57,8 +55,7 @@ public class ModeHandler extends BaseHandler
      * Usage of /mode
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/mode <channel> <mode>";
     }
 
@@ -66,8 +63,7 @@ public class ModeHandler extends BaseHandler
      * Description of /mode
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_mode);
     }
 }

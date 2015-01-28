@@ -1,10 +1,5 @@
 package mbullington.dialogue.activity;
 
-import java.util.ArrayList;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.model.Extra;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,8 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class AddAliasActivity extends Activity implements OnClickListener, OnItemClickListener, TextWatcher
-{
+import java.util.ArrayList;
+
+import mbullington.dialogue.R;
+import mbullington.dialogue.model.Extra;
+
+public class AddAliasActivity extends Activity implements OnClickListener, OnItemClickListener, TextWatcher {
     private EditText aliasInput;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> aliases;
@@ -31,8 +30,7 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
     private Button okButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -66,8 +64,7 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
      * On Click
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
                 String alias = aliasInput.getText().toString().trim();
@@ -96,11 +93,10 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
      * On item clicked
      */
     @Override
-    public void onItemClick(AdapterView<?> list, View item, int position, long id)
-    {
+    public void onItemClick(AdapterView<?> list, View item, int position, long id) {
         final String alias = adapter.getItem(position);
 
-        String[] items = { getResources().getString(R.string.action_remove) };
+        String[] items = {getResources().getString(R.string.action_remove)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(alias);
@@ -124,8 +120,7 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
      * On text changed
      */
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count)
-    {
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
         addButton.setEnabled(aliasInput.getText().length() > 0);
     }
 
@@ -133,8 +128,7 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
      * After text changed
      */
     @Override
-    public void afterTextChanged(Editable s)
-    {
+    public void afterTextChanged(Editable s) {
         // Do nothing.
     }
 
@@ -142,8 +136,7 @@ public class AddAliasActivity extends Activity implements OnClickListener, OnIte
      * Before text changed
      */
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after)
-    {
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         // Do nothing.
     }
 }

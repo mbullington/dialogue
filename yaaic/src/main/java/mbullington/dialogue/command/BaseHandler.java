@@ -20,64 +20,35 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command;
 
+import android.content.Context;
+
 import mbullington.dialogue.exception.CommandException;
 import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Base class for commands
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public abstract class BaseHandler
-{
-    /**
-     * Execute the command
-     * 
-     * @param params The params given (0 is the command itself)
-     * @param server The server object
-     * @param channel The channel object or null if no channel is selected
-     * @param service The service with all server connections
-     * @throws CommandException if command couldn't be executed
-     */
-    public abstract void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException;
-
-    /**
-     * Get the usage description for this command
-     * 
-     * @return The usage description
-     */
-    public abstract String getUsage();
-
-    /**
-     * Get the description for this command
-     * 
-     * @param context The current context. Needed for getting string resources
-     * @return
-     */
-    public abstract String getDescription(Context context);
-
+public abstract class BaseHandler {
     /**
      * Merge params to a string
-     * 
+     *
      * @params params The params to merge
      */
-    public static String mergeParams(String[] params)
-    {
+    public static String mergeParams(String[] params) {
         return mergeParams(params, 1);
     }
 
     /**
      * Merge params to a string
-     * 
-     * @param params The params to merge
+     *
+     * @param params   The params to merge
      * @param position Start at given param
      */
-    public static String mergeParams(String[] params, int position)
-    {
+    public static String mergeParams(String[] params, int position) {
         StringBuffer buffer = new StringBuffer();
 
         for (; position < params.length; position++) {
@@ -87,4 +58,30 @@ public abstract class BaseHandler
 
         return buffer.toString().trim();
     }
+
+    /**
+     * Execute the command
+     *
+     * @param params  The params given (0 is the command itself)
+     * @param server  The server object
+     * @param channel The channel object or null if no channel is selected
+     * @param service The service with all server connections
+     * @throws CommandException if command couldn't be executed
+     */
+    public abstract void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException;
+
+    /**
+     * Get the usage description for this command
+     *
+     * @return The usage description
+     */
+    public abstract String getUsage();
+
+    /**
+     * Get the description for this command
+     *
+     * @param context The current context. Needed for getting string resources
+     * @return
+     */
+    public abstract String getDescription(Context context);
 }

@@ -20,7 +20,11 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+import android.content.Intent;
+
 import org.jibble.pircbot.User;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -30,23 +34,18 @@ import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-import android.content.Intent;
-
 /**
  * Command: /names
  * Lists all users currently in the selected channel
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class NamesHandler extends BaseHandler
-{
+public class NamesHandler extends BaseHandler {
     /**
      * Execute /names
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (conversation.getType() != Conversation.TYPE_CHANNEL) {
             throw new CommandException(service.getString(R.string.only_usable_from_channel));
         }
@@ -66,9 +65,9 @@ public class NamesHandler extends BaseHandler
         conversation.addMessage(message);
 
         Intent intent = Broadcast.createConversationIntent(
-            Broadcast.CONVERSATION_MESSAGE,
-            server.getId(),
-            conversation.getName()
+                Broadcast.CONVERSATION_MESSAGE,
+                server.getId(),
+                conversation.getName()
         );
         service.sendBroadcast(intent);
     }
@@ -77,8 +76,7 @@ public class NamesHandler extends BaseHandler
      * Usage of /names
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/names";
     }
 
@@ -86,8 +84,7 @@ public class NamesHandler extends BaseHandler
      * Description of /names
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_names);
     }
 }

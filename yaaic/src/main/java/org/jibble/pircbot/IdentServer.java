@@ -14,46 +14,53 @@ found at http://www.jibble.org/licenses/
 
 package org.jibble.pircbot;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * A simple IdentServer (also know as "The Identification Protocol").
  * An ident server provides a means to determine the identity of a
  * user of a particular TCP connection.
- *  <p>
+ * <p/>
  * Most IRC servers attempt to contact the ident server on connecting
  * hosts in order to determine the user's identity.  A few IRC servers
  * will not allow you to connect unless this information is provided.
- *  <p>
+ * <p/>
  * So when a PircBot is run on a machine that does not run an ident server,
  * it may be necessary to provide a "faked" response by starting up its
  * own ident server and sending out apparently correct responses.
- *  <p>
+ * <p/>
  * An instance of this class can be used to start up an ident server
  * only if it is possible to do so.  Reasons for not being able to do
  * so are if there is already an ident server running on port 113, or
  * if you are running as an unprivileged user who is unable to create
  * a server socket on that port number.
  *
- * @since   0.9c
- * @author  Paul James Mutton,
- *          <a href="http://www.jibble.org/">http://www.jibble.org/</a>
- * @version    1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @author Paul James Mutton,
+ *         <a href="http://www.jibble.org/">http://www.jibble.org/</a>
+ * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
+ * @since 0.9c
  */
 public class IdentServer extends Thread {
-    
+
+    private String _login;
+    private ServerSocket _ss = null;
+
     /**
      * Constructs and starts an instance of an IdentServer that will
      * respond to a client with the provided login.  Rather than calling
      * this constructor explicitly from your code, it is recommended that
      * you use the startIdentServer method in the PircBot class.
-     *  <p>
+     * <p/>
      * The ident server will wait for up to 60 seconds before shutting
      * down.  Otherwise, it will shut down as soon as it has responded
      * to an ident request.
      *
-     * @param bot The PircBot instance that will be used to log to.
+     * @param bot   The PircBot instance that will be used to log to.
      * @param login The login that the ident server will respond with.
      */
     IdentServer(String login) {
@@ -62,16 +69,14 @@ public class IdentServer extends Thread {
         try {
             _ss = new ServerSocket(113);
             _ss.setSoTimeout(60000);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return;
         }
-        
+
         this.setName(this.getClass() + "-Thread");
         this.start();
     }
-    
-    
+
     /**
      * Waits for a client to connect to the ident server before making an
      * appropriate response.  Note that this method is started by the class
@@ -81,10 +86,10 @@ public class IdentServer extends Thread {
         try {
             Socket socket = _ss.accept();
             socket.setSoTimeout(60000);
-            
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            
+
             String line = reader.readLine();
             if (line != null) {
                 line = line + " : USERID : UNIX : " + _login;
@@ -92,21 +97,16 @@ public class IdentServer extends Thread {
                 writer.flush();
                 writer.close();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // We're not really concerned with what went wrong, are we?
         }
-        
+
         try {
             _ss.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Doesn't really matter...
         }
-        
+
     }
-    
-    private String _login;
-    private ServerSocket _ss = null;
-    
+
 }

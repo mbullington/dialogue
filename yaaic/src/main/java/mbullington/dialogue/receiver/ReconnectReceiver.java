@@ -21,31 +21,29 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.receiver;
 
-import mbullington.dialogue.irc.IRCService;
-import mbullington.dialogue.model.Broadcast;
-import mbullington.dialogue.model.Server;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import mbullington.dialogue.irc.IRCService;
+import mbullington.dialogue.model.Broadcast;
+import mbullington.dialogue.model.Server;
+
 /**
  * A receiver to listen for alarms and start a reconnect attempt
- * 
+ *
  * @author Steven Luo <steven+android@steven676.net>
  */
-public class ReconnectReceiver extends BroadcastReceiver
-{
+public class ReconnectReceiver extends BroadcastReceiver {
     private IRCService service;
     private Server server;
 
     /**
      * Create a new reconnect receiver
-     * 
+     *
      * @param server The server to reconnect to
      */
-    public ReconnectReceiver(IRCService service, Server server)
-    {
+    public ReconnectReceiver(IRCService service, Server server) {
         this.service = service;
         this.server = server;
     }
@@ -54,8 +52,7 @@ public class ReconnectReceiver extends BroadcastReceiver
      * On receive broadcast
      */
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
+    public void onReceive(Context context, Intent intent) {
         if (!intent.getAction().equals(Broadcast.SERVER_RECONNECT + server.getId())) {
             return;
         }

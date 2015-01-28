@@ -20,11 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
-import java.util.ArrayList;
-
-import mbullington.dialogue.R;
-import mbullington.dialogue.model.Extra;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -40,13 +35,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
+import mbullington.dialogue.R;
+import mbullington.dialogue.model.Extra;
+
 /**
  * Adding commands (to execute after connect) to a server
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class AddCommandsActivity extends Activity implements OnClickListener, OnItemClickListener
-{
+public class AddCommandsActivity extends Activity implements OnClickListener, OnItemClickListener {
     private EditText commandInput;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> commands;
@@ -56,8 +55,7 @@ public class AddCommandsActivity extends Activity implements OnClickListener, On
      * On create
      */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -90,8 +88,7 @@ public class AddCommandsActivity extends Activity implements OnClickListener, On
      * On Click
      */
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.add:
                 String command = commandInput.getText().toString().trim();
@@ -125,11 +122,10 @@ public class AddCommandsActivity extends Activity implements OnClickListener, On
      * On item clicked
      */
     @Override
-    public void onItemClick(AdapterView<?> list, View item, int position, long id)
-    {
+    public void onItemClick(AdapterView<?> list, View item, int position, long id) {
         final String command = adapter.getItem(position);
 
-        String[] items = { getResources().getString(R.string.action_remove) };
+        String[] items = {getResources().getString(R.string.action_remove)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(command);

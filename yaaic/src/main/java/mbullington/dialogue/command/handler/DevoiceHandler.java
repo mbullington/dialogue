@@ -20,6 +20,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.command.handler;
 
+import android.content.Context;
+
 import mbullington.dialogue.R;
 import mbullington.dialogue.command.BaseHandler;
 import mbullington.dialogue.exception.CommandException;
@@ -27,21 +29,17 @@ import mbullington.dialogue.irc.IRCService;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Server;
 
-import android.content.Context;
-
 /**
  * Command: /devoice <nickname>
- * 
+ *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class DevoiceHandler extends BaseHandler
-{
+public class DevoiceHandler extends BaseHandler {
     /**
      * Execute /devoice
      */
     @Override
-    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException
-    {
+    public void execute(String[] params, Server server, Conversation conversation, IRCService service) throws CommandException {
         if (conversation.getType() != Conversation.TYPE_CHANNEL) {
             throw new CommandException(service.getString(R.string.only_usable_from_channel));
         }
@@ -57,8 +55,7 @@ public class DevoiceHandler extends BaseHandler
      * Usage of /devoice
      */
     @Override
-    public String getUsage()
-    {
+    public String getUsage() {
         return "/devoice <nickname>";
     }
 
@@ -66,8 +63,7 @@ public class DevoiceHandler extends BaseHandler
      * Description of /devoice
      */
     @Override
-    public String getDescription(Context context)
-    {
+    public String getDescription(Context context) {
         return context.getString(R.string.command_desc_devoice);
     }
 }

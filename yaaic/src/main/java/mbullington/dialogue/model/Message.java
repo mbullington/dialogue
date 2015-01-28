@@ -20,11 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.model;
 
-import java.util.Date;
-
-import mbullington.dialogue.utils.MircColors;
-import mbullington.dialogue.utils.Smilies;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -38,67 +33,68 @@ import android.text.style.ImageSpan;
 import android.text.util.Linkify;
 import android.widget.TextView;
 
+import java.util.Date;
+
+import mbullington.dialogue.utils.MircColors;
+import mbullington.dialogue.utils.Smilies;
+
 /**
  * A channel or server message
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class Message
-{
-    public static final int COLOR_GREEN   = 0xFF458509;
-    public static final int COLOR_RED     = 0xFFcc0000;
-    public static final int COLOR_BLUE    = 0xFF729fcf;
-    public static final int COLOR_YELLOW  = 0xFFbe9b01;
-    public static final int COLOR_GREY    = 0xFFaaaaaa;
+public class Message {
+    public static final int COLOR_GREEN = 0xFF458509;
+    public static final int COLOR_RED = 0xFFcc0000;
+    public static final int COLOR_BLUE = 0xFF729fcf;
+    public static final int COLOR_YELLOW = 0xFFbe9b01;
+    public static final int COLOR_GREY = 0xFFaaaaaa;
     public static final int COLOR_DEFAULT = 0xFFeeeeee;
 
     /* normal message, this is the default */
     public static final int TYPE_MESSAGE = 0;
 
     /* join, part or quit */
-    public static final int TYPE_MISC    = 1;
+    public static final int TYPE_MISC = 1;
 
     /* Some are light versions because dark colors hardly readable on
      * Yaaic's dark background */
     public static final int[] colors = {
-        0xFFffffff, // White
-        0xFFffff00, // Yellow
-        0xFFff00ff, // Fuchsia
-        0xFFff0000, // Red
-        0xFFc0c0c0, // Silver
-        0xFF808080, // Gray
-        0xFF808000, // Olive
-        0xFFC040C0, // Light Purple
-        0xFFC04040, // Light Maroon
-        0xFF00ffff, // Agua
-        0xFF80ff80, // Light Lime
-        0xFF008080, // Teal
-        0xFF008000, // Green
-        0xFF8484FF, // Light Blue
-        0xFF6060D0, // Light Navy
-        0xFF000000, // Black
+            0xFFffffff, // White
+            0xFFffff00, // Yellow
+            0xFFff00ff, // Fuchsia
+            0xFFff0000, // Red
+            0xFFc0c0c0, // Silver
+            0xFF808080, // Gray
+            0xFF808000, // Olive
+            0xFFC040C0, // Light Purple
+            0xFFC04040, // Light Maroon
+            0xFF00ffff, // Agua
+            0xFF80ff80, // Light Lime
+            0xFF008080, // Teal
+            0xFF008000, // Green
+            0xFF8484FF, // Light Blue
+            0xFF6060D0, // Light Navy
+            0xFF000000, // Black
     };
 
-    public static final int NO_ICON  = -1;
-    public static final int NO_TYPE  = -1;
+    public static final int NO_ICON = -1;
+    private int type = NO_ICON;
+    public static final int NO_TYPE = -1;
+    private int icon = NO_TYPE;
     public static final int NO_COLOR = -1;
-
+    private int color = NO_COLOR;
     private final String text;
     private final String sender;
     private SpannableString canvas;
     private long timestamp;
-
-    private int color = NO_COLOR;
-    private int type  = NO_ICON;
-    private int icon  = NO_TYPE;
 
     /**
      * Create a new message without an icon defaulting to TYPE_MESSAGE
      *
      * @param text
      */
-    public Message(String text)
-    {
+    public Message(String text) {
         this(text, null, TYPE_MESSAGE);
     }
 
@@ -108,8 +104,7 @@ public class Message
      * @param text
      * @param type Message type
      */
-    public Message(String text, int type)
-    {
+    public Message(String text, int type) {
         this(text, null, type);
     }
 
@@ -120,8 +115,7 @@ public class Message
      * @param text
      * @param sender
      */
-    public Message(String text, String sender)
-    {
+    public Message(String text, String sender) {
         this(text, sender, TYPE_MESSAGE);
     }
 
@@ -130,10 +124,9 @@ public class Message
      *
      * @param text
      * @param sender
-     * @param type Message type
+     * @param type   Message type
      */
-    public Message(String text, String sender, int type)
-    {
+    public Message(String text, String sender, int type) {
         this.text = text;
         this.sender = sender;
         this.timestamp = new Date().getTime();
@@ -141,21 +134,19 @@ public class Message
     }
 
     /**
-     * Set the message's icon
-     */
-    public void setIcon(int icon)
-    {
-        this.icon = icon;
-    }
-
-    /**
      * Get the message's icon
      *
      * @return
      */
-    public int getIcon()
-    {
+    public int getIcon() {
         return icon;
+    }
+
+    /**
+     * Set the message's icon
+     */
+    public void setIcon(int icon) {
+        this.icon = icon;
     }
 
     /**
@@ -163,8 +154,7 @@ public class Message
      *
      * @return
      */
-    public String getText()
-    {
+    public String getText() {
         return text;
     }
 
@@ -173,16 +163,14 @@ public class Message
      *
      * @return One of Message.TYPE_*
      */
-    public int getType()
-    {
+    public int getType() {
         return type;
     }
 
     /**
      * Set the color of this message
      */
-    public void setColor(int color)
-    {
+    public void setColor(int color) {
         this.color = color;
     }
 
@@ -191,8 +179,7 @@ public class Message
      *
      * @param timestamp
      */
-    public void setTimestamp(long timestamp)
-    {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -201,8 +188,7 @@ public class Message
      *
      * @return a color hexa
      */
-    private int getSenderColor()
-    {
+    private int getSenderColor() {
         /* It might be worth to use some hash table here */
         if (sender == null) {
             return COLOR_DEFAULT;
@@ -210,7 +196,7 @@ public class Message
 
         int color = 0;
 
-        for(int i = 0; i < sender.length(); i++){
+        for (int i = 0; i < sender.length(); i++) {
             color += sender.charAt(i);
         }
 
@@ -225,13 +211,12 @@ public class Message
      *
      * @return
      */
-    public SpannableString render(Context context)
-    {
+    public SpannableString render(Context context) {
         Settings settings = new Settings(context);
 
         if (canvas == null) {
-            String prefix    = hasIcon() && settings.showIcons() ? "  " : "";
-            String nick      = hasSender() ? "<" + sender + "> " : "";
+            String prefix = hasIcon() && settings.showIcons() ? "  " : "";
+            String nick = hasSender() ? "<" + sender + "> " : "";
             String timestamp = settings.showTimestamp() ? renderTimeStamp(settings.use24hFormat(), settings.includeSeconds()) : "";
 
             canvas = new SpannableString(prefix + timestamp + nick);
@@ -241,7 +226,7 @@ public class Message
                 renderedText = MircColors.toSpannable(text);
             } else {
                 renderedText = new SpannableString(
-                    MircColors.removeStyleAndColors(text)
+                        MircColors.removeStyleAndColors(text)
                 );
             }
 
@@ -256,7 +241,7 @@ public class Message
                 int end = start + sender.length();
 
                 if (settings.showColorsNick()) {
-                    canvas.setSpan(new ForegroundColorSpan(getSenderColor()), start, end , Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    canvas.setSpan(new ForegroundColorSpan(getSenderColor()), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
 
@@ -288,8 +273,7 @@ public class Message
      *
      * @return
      */
-    private boolean hasSender()
-    {
+    private boolean hasSender() {
         return sender != null;
     }
 
@@ -298,8 +282,7 @@ public class Message
      *
      * @return
      */
-    private boolean hasColor()
-    {
+    private boolean hasColor() {
         return color != NO_COLOR;
     }
 
@@ -308,8 +291,7 @@ public class Message
      *
      * @return
      */
-    private boolean hasIcon()
-    {
+    private boolean hasIcon() {
         return icon != NO_ICON;
     }
 
@@ -319,8 +301,7 @@ public class Message
      * @param context
      * @return
      */
-    public TextView renderTextView(Context context)
-    {
+    public TextView renderTextView(Context context) {
         // XXX: We should not read settings here ALWAYS for EVERY textview
         Settings settings = new Settings(context);
 
@@ -353,8 +334,7 @@ public class Message
      * @param use24hFormat
      * @return
      */
-    public String renderTimeStamp(boolean use24hFormat, boolean includeSeconds)
-    {
+    public String renderTimeStamp(boolean use24hFormat, boolean includeSeconds) {
         Date date = new Date(timestamp);
 
         int hours = date.getHours();
@@ -370,15 +350,15 @@ public class Message
 
         if (includeSeconds) {
             return String.format(
-                "[%02d:%02d:%02d]",
-                hours,
-                minutes,
-                seconds);
+                    "[%02d:%02d:%02d]",
+                    hours,
+                    minutes,
+                    seconds);
         } else {
             return String.format(
-                "[%02d:%02d]",
-                hours,
-                minutes);
+                    "[%02d:%02d]",
+                    hours,
+                    minutes);
         }
     }
 }

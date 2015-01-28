@@ -20,12 +20,6 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.utils;
 
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import mbullington.dialogue.R;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -33,23 +27,27 @@ import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import mbullington.dialogue.R;
+
 /**
  * Class for handling graphical smilies in text messages.
  *
  * @author Liato
  */
-public abstract class Smilies
-{
+public abstract class Smilies {
     private static final HashMap<String, Integer> mappings = new HashMap<String, Integer>();
 
     /**
      * Converts all smilies in a string to graphical smilies.
      *
-     * @param text  A string with smilies.
-     * @return      A SpannableString with graphical smilies.
+     * @param text A string with smilies.
+     * @return A SpannableString with graphical smilies.
      */
-    public static SpannableString toSpannable(SpannableString text, Context context)
-    {
+    public static SpannableString toSpannable(SpannableString text, Context context) {
         mappings.put(">:o", R.drawable.smiley_yell);
         mappings.put(">:-o", R.drawable.smiley_yell);
         mappings.put("O:)", R.drawable.smiley_innocent);
@@ -99,14 +97,14 @@ public abstract class Smilies
             regex.append("|");
         }
 
-        regex.deleteCharAt(regex.length()-1);
+        regex.deleteCharAt(regex.length() - 1);
         regex.append(")");
         Pattern smiliematcher = Pattern.compile(regex.toString());
         Matcher m = smiliematcher.matcher(text);
 
         while (m.find()) {
-            Log.d("Smilies", "SID: "+mappings.get(m.group(1)).intValue());
-            Log.d("Smilies", "OID: "+R.drawable.smiley_smile);
+            Log.d("Smilies", "SID: " + mappings.get(m.group(1)).intValue());
+            Log.d("Smilies", "OID: " + R.drawable.smiley_smile);
             Drawable smilie = context.getResources().getDrawable(mappings.get(m.group(1)).intValue());
             smilie.setBounds(0, 0, smilie.getIntrinsicWidth(), smilie.getIntrinsicHeight());
             ImageSpan span = new ImageSpan(smilie, ImageSpan.ALIGN_BOTTOM);
@@ -119,11 +117,10 @@ public abstract class Smilies
     /**
      * Converts all smilies in a string to graphical smilies.
      *
-     * @param text  A string with smilies.
-     * @return      A SpannableString with graphical smilies.
+     * @param text A string with smilies.
+     * @return A SpannableString with graphical smilies.
      */
-    public static SpannableString toSpannable(String text, Context context)
-    {
+    public static SpannableString toSpannable(String text, Context context) {
         return toSpannable(new SpannableString(text), context);
     }
 }
