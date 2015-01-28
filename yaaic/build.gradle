@@ -5,11 +5,11 @@ android {
     buildToolsVersion "21.1.1"
 
     defaultConfig {
-        applicationId "org.numixproject.hermes"
+        applicationId "mbullington.dialogue"
         minSdkVersion 16
         targetSdkVersion 21
 
-        testApplicationId "org.numixproject.hermes.test"
+        testApplicationId "mbullington.dialogue.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
@@ -25,5 +25,4 @@ dependencies {
     compile project(':viewPagerIndicator')
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.android.support:appcompat-v7:21.0.+'
-    androidTestCompile 'com.jayway.android.robotium:robotium-solo:3.5.1'
 }

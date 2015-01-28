@@ -38,8 +38,8 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import org.numixproject.hermes.ssl.NaiveTrustManager;
-import org.numixproject.hermes.tools.Base64;
+import mbullington.dialogue.ssl.NaiveTrustManager;
+import mbullington.dialogue.tools.Base64;
 
 /**
  * PircBot is a Java framework for writing IRC bots quickly and easily.
