@@ -336,7 +336,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.edit_fab) {
-            this.startActivityForResult(new Intent(MainActivity.this, AddServerActivity.class), 0);
+            this.startActivityForResult(new Intent(this, AddServerActivity.class), 0);
         }
     }
 }

@@ -20,9 +20,15 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import mbullington.dialogue.R;
 
@@ -31,26 +37,37 @@ import mbullington.dialogue.R;
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class SettingsActivity extends PreferenceActivity {
-    /**
-     * On create
-     */
+public class SettingsActivity extends ActionBarActivity implements View.OnClickListener {
+
+    private Toolbar toolbar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.settings);
 
-        addPreferencesFromResource(R.xml.preferences);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.arrow);
+        toolbar.setNavigationOnClickListener(this);
+        toolbar.setTitle(R.string.settings_menu);
+
+        if(savedInstanceState == null) {
+            getFragmentManager().beginTransaction().add(R.id.prefs, new SettingsFragment()).commit();
+        }
     }
 
-    /**
-     * On menu item selected.
-     */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
+    public void onClick(View v) {
+        finish();
+    }
 
-        return true;
+    public static class SettingsFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences);
+        }
     }
 }
