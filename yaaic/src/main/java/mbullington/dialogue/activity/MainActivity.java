@@ -37,6 +37,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -60,13 +61,14 @@ import mbullington.dialogue.receiver.ServerReceiver;
  *
  * @author Sebastian Kaspari <sebastian@yaaic.org>
  */
-public class MainActivity extends ActionBarActivity implements ServiceConnection, ServerListener, OnItemClickListener, OnItemLongClickListener {
+public class MainActivity extends ActionBarActivity implements ServiceConnection, ServerListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener {
     private static int instanceCount = 0;
     private IRCBinder binder;
     private ServerReceiver receiver;
     private ServerListAdapter adapter;
     private ListView list;
     private Toolbar toolbar;
+    private ImageButton fab;
 
     /**
      * On create
@@ -91,6 +93,9 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        fab = (ImageButton) findViewById(R.id.edit_fab);
+        fab.setOnClickListener(this);
 
         adapter = new ServerListAdapter();
 
@@ -273,9 +278,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add:
-                startActivityForResult(new Intent(this, AddServerActivity.class), 0);
-                break;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
@@ -329,10 +331,12 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public void onStatusUpdate() {
         adapter.loadServers();
+    }
 
-        if (adapter.getCount() > 2) {
-            // Hide background if there are servers in the list
-            list.setBackgroundDrawable(null);
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.edit_fab) {
+            this.startActivityForResult(new Intent(MainActivity.this, AddServerActivity.class), 0);
         }
     }
 }
