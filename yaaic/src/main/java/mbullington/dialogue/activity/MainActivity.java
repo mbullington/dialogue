@@ -43,6 +43,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
+import butterknife.OnItemClick;
+import butterknife.OnItemLongClick;
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.adapter.ServerListAdapter;
@@ -56,19 +62,20 @@ import mbullington.dialogue.model.Server;
 import mbullington.dialogue.model.Status;
 import mbullington.dialogue.receiver.ServerReceiver;
 
-/**
- * List of servers
- *
- * @author Sebastian Kaspari <sebastian@yaaic.org>
- */
-public class MainActivity extends ActionBarActivity implements ServiceConnection, ServerListener, View.OnClickListener, OnItemClickListener, OnItemLongClickListener {
+public class MainActivity extends ActionBarActivity implements ServiceConnection, ServerListener {
     private static int instanceCount = 0;
     private IRCBinder binder;
     private ServerReceiver receiver;
     private ServerListAdapter adapter;
-    private ListView list;
-    private Toolbar toolbar;
-    private ImageButton fab;
+
+    @InjectView(android.R.id.list)
+    ListView list;
+
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @InjectView(R.id.edit_fab)
+    ImageButton fab;
 
     /**
      * On create
@@ -76,33 +83,20 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-         * With activity:launchMode = standard, we get duplicated activities
-         * depending on the task the app was started in. In order to avoid
-         * stacking up of this duplicated activities we keep a count of this
-         * root activity and let it finish if it already exists
-         *
-         * Launching the app via the notification icon creates a new task,
-         * and there doesn't seem to be a way around this so this is needed
-         */
+
+        // avoid duplicate activities
         if (instanceCount > 0) {
             finish();
         }
         instanceCount++;
         setContentView(R.layout.main);
+        ButterKnife.inject(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        fab = (ImageButton) findViewById(R.id.edit_fab);
-        fab.setOnClickListener(this);
 
         adapter = new ServerListAdapter();
 
-        list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(adapter);
-        list.setOnItemClickListener(this);
-        list.setOnItemLongClickListener(this);
     }
 
     /**
@@ -156,19 +150,13 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         binder = (IRCBinder) service;
     }
 
-    /**
-     * Service disconnected from Activity
-     */
     @Override
     public void onServiceDisconnected(ComponentName name) {
         binder = null;
     }
 
-    /**
-     * On server selected
-     */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    @OnItemClick(android.R.id.list)
+    public void onServerSelected(AdapterView<?> parent, View view, int position, long id) {
         Server server = adapter.getItem(position);
 
         if (server == null) {
@@ -188,11 +176,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         startActivity(intent);
     }
 
-    /**
-     * On long click
-     */
-    @Override
-    public boolean onItemLongClick(AdapterView<?> l, View v, int position, long id) {
+    @OnItemLongClick(android.R.id.list)
+    public boolean onServerOptions(AdapterView<?> l, View v, int position, long id) {
         final Server server = adapter.getItem(position);
 
         if (server == null) {
@@ -333,10 +318,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         adapter.loadServers();
     }
 
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.edit_fab) {
-            this.startActivityForResult(new Intent(this, AddServerActivity.class), 0);
-        }
+    @OnClick(R.id.edit_fab)
+    public void onAddServer(View v) {
+        this.startActivityForResult(new Intent(this, AddServerActivity.class), 0);
     }
 }

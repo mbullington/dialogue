@@ -30,6 +30,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import mbullington.dialogue.R;
 
 /**
@@ -39,14 +41,15 @@ import mbullington.dialogue.R;
  */
 public class SettingsActivity extends ActionBarActivity implements View.OnClickListener {
 
-    private Toolbar toolbar;
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+        ButterKnife.inject(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.arrow);

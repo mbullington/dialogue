@@ -36,22 +36,13 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <ListView android:id="@android:id/list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <ImageButton android:id="@+id/edit_fab"
-        android:elevation="2dp"
-        android:layout_height="56dp"
-        android:layout_width="56dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/fab"
-        android:src="@drawable/add"
-        android:textColor="#fff"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+    <include layout="@layout/edit_fab"
+        android:id="@+id/edit_fab" />
 </RelativeLayout>

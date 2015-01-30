@@ -22,6 +22,7 @@ package mbullington.dialogue.activity;
 
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -37,6 +38,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.method.TextKeyListener;
 import android.view.KeyEvent;
@@ -55,6 +57,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.adapter.ConversationPagerAdapter;
@@ -95,10 +99,8 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
     private static final int REQUEST_CODE_USERS = 2;
     private static final int REQUEST_CODE_USER = 3;
     private static final int REQUEST_CODE_NICK_COMPLETION = 4;
+
     private final OnKeyListener inputKeyListener = new OnKeyListener() {
-        /**
-         * On key pressed (input line)
-         */
         @Override
         public boolean onKey(View view, int keyCode, KeyEvent event) {
             EditText input = (EditText) view;
@@ -145,6 +147,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
             return false;
         }
     };
+    
     private int serverId;
     private Server server;
     private IRCBinder binder;
@@ -179,12 +182,21 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
             this.finish();
         }
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.conversations);
+        ButterKnife.inject(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.arrow);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConversationActivity.this.finish();
+            }
+        });
 
         setTitle(server.getTitle());
-
-        setContentView(R.layout.conversations);
 
         boolean isLandscape = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
 
@@ -257,6 +269,12 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
 
         // Create a new scrollback history
         scrollback = new Scrollback();
+    }
+
+    @OnClick(R.id.input)
+    public void onClickInput(View v) {
+        InputMethodManager input = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        input.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
     }
 
     /**
