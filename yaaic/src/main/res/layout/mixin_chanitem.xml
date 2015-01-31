@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/ripple"
     android:layout_height="56dp"
-    android:layout_width="fill_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:layout_width="fill_parent">
 
     <TextView
         android:id="@+id/messages_status"
-        android:layout_height="24dp"
-        android:layout_width="24dp"
+        android:background="@drawable/status_normal"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_centerVertical="true"
+        android:layout_height="32dp"
+        android:layout_width="32dp"
+        android:gravity="center"
         android:textColor="#fff" />
     <TextView
         android:id="@+id/text"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingBottom="20dp"
-        android:paddingLeft="32dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="72dp"
+        android:paddingBottom="2dp"
+        android:layout_centerVertical="true"
         android:textSize="16sp"/>
-</LinearLayout>
+</RelativeLayout>

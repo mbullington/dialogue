@@ -20,6 +20,12 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.adapter;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,16 +36,21 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.model.Server;
 
 import android.support.v7.widget.RecyclerView;
 
+import com.squareup.otto.Bus;
+
 public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.ServerListViewHolder> {
-    public ArrayList<Server> servers;
+    public Bus bus;
+    private ArrayList<Server> servers;
 
     public ServerListAdapter() {
+        bus = new Bus();
     }
 
     public void loadServers() {
@@ -49,8 +60,7 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
 
     @Override
     public ServerListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.i("Dialogue", "#1");
-        return new ServerListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.mixin_chanitem, parent, false));
+        return new ServerListViewHolder(this, LayoutInflater.from(parent.getContext()).inflate(R.layout.mixin_chanitem, parent, false));
     }
 
     @Override
@@ -65,8 +75,29 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
         return servers.size();
     }
 
+    public static class OnClickEvent {
+        public Server server;
+        public boolean isLongClick;
+
+        public OnClickEvent(Server server) {
+            this(server, false);
+        }
+
+        public OnClickEvent(Server server, boolean isLongClick) {
+            this.server = server;
+            this.isLongClick = isLongClick;
+        }
+    }
+
     public static class ServerListViewHolder extends RecyclerView.ViewHolder {
 
+        private final Drawable statusDisconnected;
+        private final Drawable statusConnected;
+        private final Drawable statusNotify;
+
+        private ServerListAdapter adapter;
+
+        private Context context;
         private Server server;
         private int notificationCount;
 
@@ -76,9 +107,32 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
         @InjectView(R.id.text)
         TextView text;
 
-        public ServerListViewHolder(View v) {
+        public ServerListViewHolder(ServerListAdapter adapter, View v) {
             super(v);
             ButterKnife.inject(this, v);
+
+            this.adapter = adapter;
+            this.context = v.getContext();
+
+            this.statusDisconnected = context.getResources().getDrawable(R.drawable.status_disconnected);
+            this.statusConnected = context.getResources().getDrawable(R.drawable.status_connected);
+            this.statusNotify = context.getResources().getDrawable(R.drawable.status_notify);
+
+
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ServerListViewHolder.this.adapter.bus.post(new OnClickEvent(ServerListViewHolder.this.server));
+                }
+            });
+
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ServerListViewHolder.this.adapter.bus.post(new OnClickEvent(ServerListViewHolder.this.server, true));
+                    return true;
+                }
+            });
         }
 
         public void setServer(Server server) {

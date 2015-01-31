@@ -36,19 +36,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
+
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import butterknife.OnItemClick;
-import butterknife.OnItemLongClick;
 
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
@@ -88,12 +86,14 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         }
         instanceCount++;
 
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
         setSupportActionBar(toolbar);
 
         adapter = new ServerListAdapter();
+        adapter.bus.register(this);
+
         list.setAdapter(adapter);
         list.setLayoutManager(new LinearLayoutManager(this, LinearLayout.VERTICAL, false));
     }
@@ -212,36 +212,26 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         adapter.loadServers();
     }
 
-    /*
-    @OnItemClick(android.R.id.list)
-    public void onItemClickList(AdapterView<?> parent, View view, int position, long id) {
-        Server server = adapter.getItem(position);
-
-        if (server == null) {
-            // "Add server" was selected
-            startActivityForResult(new Intent(this, AddServerActivity.class), 0);
+    @Subscribe
+    public void onItemClick(ServerListAdapter.OnClickEvent e) {
+        if(e.isLongClick)
             return;
-        }
 
         Intent intent = new Intent(this, ConversationActivity.class);
 
-        if (server.getStatus() == Status.DISCONNECTED && !server.mayReconnect()) {
-            server.setStatus(Status.PRE_CONNECTING);
+        if (e.server.getStatus() == Status.DISCONNECTED && !e.server.mayReconnect()) {
+            e.server.setStatus(Status.PRE_CONNECTING);
             intent.putExtra("connect", true);
         }
 
-        intent.putExtra("serverId", server.getId());
+        intent.putExtra("serverId", e.server.getId());
         startActivity(intent);
     }
 
-    @OnItemLongClick(android.R.id.list)
-    public boolean onItemLongClickList(AdapterView<?> l, View v, int position, long id) {
-        final Server server = adapter.getItem(position);
-
-        if (server == null) {
-            // "Add server" view selected
-            return true;
-        }
+    @Subscribe
+    public void onItemLongClick(ServerListAdapter.OnClickEvent e) {
+        if(!e.isLongClick)
+            return;
 
         final CharSequence[] items = {
                 getString(R.string.connect),
@@ -250,8 +240,10 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
                 getString(R.string.delete)
         };
 
+        final Server server = e.server;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(server.getTitle());
+        builder.setTitle(e.server.getTitle());
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
@@ -281,9 +273,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         });
         AlertDialog alert = builder.create();
         alert.show();
-        return true;
     }
-    */
 
     @OnClick(R.id.edit_fab)
     public void onClickEditFab(View v) {

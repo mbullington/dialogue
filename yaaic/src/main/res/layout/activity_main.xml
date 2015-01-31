@@ -40,7 +40,8 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
 
         <android.support.v7.widget.RecyclerView android:id="@+id/list"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:paddingTop="8dp" />
     </LinearLayout>
 
     <include layout="@layout/mixin_edit_fab"

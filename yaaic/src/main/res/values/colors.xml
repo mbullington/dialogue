@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_light">#E0E0E0</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="status_disconnected">#42000000</color>
+    <color name="status_connected">#89000000</color>
+    <color name="status_notify">#F44336</color>
 </resources>
