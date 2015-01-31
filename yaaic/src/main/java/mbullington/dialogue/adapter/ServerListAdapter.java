@@ -20,127 +20,80 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.adapter;
 
-import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.model.Server;
 
-/**
- * Adapter for server lists
- *
- * @author Sebastian Kaspari <sebastian@yaaic.org>
- */
-public class ServerListAdapter extends BaseAdapter {
-    private static final int COLOR_CONNECTED = 0xFFbcbcbc;
-    private static final int COLOR_DISCONNECTED = 0xFF585858;
+import android.support.v7.widget.RecyclerView;
 
-    private ArrayList<Server> servers;
+public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.ServerListViewHolder> {
+    public ArrayList<Server> servers;
 
-    /**
-     * Create a new adapter for server lists
-     */
     public ServerListAdapter() {
-        loadServers();
     }
 
-    /**
-     * Load servers from database
-     * <p/>
-     * Delegate call to yaaic instance
-     */
     public void loadServers() {
-        servers = Dialogue.getInstance().getServersAsArrayList();
+        this.servers = Dialogue.getInstance().getServersAsArrayList();
         notifyDataSetChanged();
     }
 
-    /**
-     * Get number of items
-     */
     @Override
-    public int getCount() {
-        int size = servers.size();
-
-        // Display "Add server" item
-        if (size == 0) {
-            return 1;
-        }
-
-        return size;
+    public ServerListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.i("Dialogue", "#1");
+        return new ServerListViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.mixin_chanitem, parent, false));
     }
 
-    /**
-     * Get item at position
-     *
-     * @param position
-     */
     @Override
-    public Server getItem(int position) {
-        if (servers.size() == 0) {
-            return null; // No server object for the "add server" view
-        }
-
-        return servers.get(position);
+    public void onBindViewHolder(ServerListViewHolder holder, int index) {
+        Server server = servers.get(index);
+        holder.setServer(server);
+        holder.setText(server.getTitle());
     }
 
-    /**
-     * Get id of item at position
-     *
-     * @param position
-     */
     @Override
-    public long getItemId(int position) {
-        if (servers.size() == 0) {
-            return 0;
-        }
-
-        return getItem(position).getId();
+    public int getItemCount() {
+        return servers.size();
     }
 
-    /**
-     * Get view for item at given position
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     */
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Server server = getItem(position);
+    public static class ServerListViewHolder extends RecyclerView.ViewHolder {
 
-        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        private Server server;
+        private int notificationCount;
 
-        if (server == null) {
-            // Return "Add server" view
-            return inflater.inflate(R.layout.addserveritem, null);
+        @InjectView(R.id.messages_status)
+        TextView messagesStatus;
+
+        @InjectView(R.id.text)
+        TextView text;
+
+        public ServerListViewHolder(View v) {
+            super(v);
+            ButterKnife.inject(this, v);
         }
 
-        View v = inflater.inflate(R.layout.serveritem, null);
-
-        TextView titleView = (TextView) v.findViewById(R.id.title);
-        titleView.setText(server.getTitle());
-
-        TextView hostView = (TextView) v.findViewById(R.id.host);
-        hostView.setText(server.getIdentity().getNickname() + " @ " + server.getHost() + " : " + server.getPort());
-
-        if (server.isConnected()) {
-            titleView.setTextColor(COLOR_CONNECTED);
-            hostView.setTextColor(COLOR_CONNECTED);
-        } else {
-            titleView.setTextColor(COLOR_DISCONNECTED);
-            hostView.setTextColor(COLOR_DISCONNECTED);
+        public void setServer(Server server) {
+            this.server = server;
         }
 
-        ((ImageView) v.findViewById(R.id.status)).setImageResource(server.getStatusIcon());
+        public void setText(String text) {
+            this.text.setText(text);
+        }
 
-        return v;
+        public void setNotificationCount(int count) {
+            this.notificationCount = count;
+            if(server != null && server.isConnected()) {
+                messagesStatus.setText(String.valueOf(this.notificationCount));
+            }
+        }
     }
 }

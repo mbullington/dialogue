@@ -59,6 +59,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.adapter.ConversationPagerAdapter;
@@ -147,7 +148,7 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
             return false;
         }
     };
-    
+
     private int serverId;
     private Server server;
     private IRCBinder binder;

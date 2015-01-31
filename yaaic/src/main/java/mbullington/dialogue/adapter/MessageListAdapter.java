@@ -18,6 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package mbullington.dialogue.adapter;
 
 import android.content.Context;
@@ -32,22 +33,11 @@ import java.util.LinkedList;
 import mbullington.dialogue.model.Conversation;
 import mbullington.dialogue.model.Message;
 
-/**
- * Adapter for (channel) messages in a ListView
- *
- * @author Sebastian Kaspari <sebastian@yaaic.org>
- */
 public class MessageListAdapter extends BaseAdapter {
     private final LinkedList<TextView> messages;
     private final Context context;
     private int historySize;
 
-    /**
-     * Create a new MessageAdapter
-     *
-     * @param channel
-     * @param context
-     */
     public MessageListAdapter(Conversation conversation, Context context) {
         LinkedList<TextView> messages = new LinkedList<TextView>();
 
@@ -75,11 +65,6 @@ public class MessageListAdapter extends BaseAdapter {
         historySize = conversation.getHistorySize();
     }
 
-    /**
-     * Add a message to the list
-     *
-     * @param message
-     */
     public void addMessage(Message message) {
         messages.add(message.renderTextView(context));
 
@@ -90,11 +75,6 @@ public class MessageListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    /**
-     * Add a list of messages to the list
-     *
-     * @param messages
-     */
     public void addBulkMessages(LinkedList<Message> messages) {
         LinkedList<TextView> mMessages = this.messages;
         Context mContext = this.context;
@@ -111,54 +91,26 @@ public class MessageListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    /**
-     * Get number of items
-     *
-     * @return
-     */
     @Override
     public int getCount() {
         return messages.size();
     }
 
-    /**
-     * Get item at given position
-     *
-     * @param position
-     * @return
-     */
     @Override
     public TextView getItem(int position) {
         return messages.get(position);
     }
 
-    /**
-     * Get id of item at given position
-     *
-     * @param position
-     * @return
-     */
     @Override
     public long getItemId(int position) {
         return position;
     }
 
-    /**
-     * Get item view for the given position
-     *
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return getItem(position);
     }
 
-    /**
-     * XXX This is almost certainly covering up a bug elsewhere -- find it!
-     */
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
         if (observer == null) {
