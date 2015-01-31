@@ -104,7 +104,7 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
         protected void onClick(View v) {
             RotateAnimation animation = new RotateAnimation(rotation ? 0 : 180, rotation ? 180 : 360, action.getPivotX(), action.getPivotY());
             animation.setInterpolator(AnimationUtils.loadInterpolator(this.context, android.R.interpolator.fast_out_slow_in));
-            animation.setDuration(500);
+            animation.setDuration(600);
             animation.setFillAfter(true);
 
             rotation = !rotation;
