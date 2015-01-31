@@ -48,7 +48,7 @@ public class SettingsActivity extends ActionBarActivity implements View.OnClickL
 
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.arrow);
+        toolbar.setNavigationIcon(R.drawable.back_arrow);
         toolbar.setNavigationOnClickListener(this);
         toolbar.setTitle(R.string.settings_menu);
 

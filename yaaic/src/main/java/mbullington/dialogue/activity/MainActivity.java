@@ -20,6 +20,7 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
  */
 package mbullington.dialogue.activity;
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -32,10 +33,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -225,7 +229,12 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         }
 
         intent.putExtra("serverId", e.server.getId());
-        startActivity(intent);
+
+        List<Pair<View, String>> sharedViews = new ArrayList<Pair<View, String>>();
+        sharedViews.add(Pair.create((View) this.toolbar, getString(R.string.animation_toolbar)));
+
+        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(this, sharedViews.toArray(new Pair[sharedViews.size()])).toBundle();
+        startActivity(intent, bundle);
     }
 
     @Subscribe

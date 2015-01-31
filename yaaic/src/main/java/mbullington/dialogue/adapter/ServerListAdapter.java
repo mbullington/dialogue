@@ -21,22 +21,22 @@ along with Yaaic.  If not, see <http://www.gnu.org/licenses/>.
 package mbullington.dialogue.adapter;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Interpolator;
 import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.PathInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import mbullington.dialogue.Dialogue;
 import mbullington.dialogue.R;
 import mbullington.dialogue.model.Server;
@@ -45,7 +45,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.squareup.otto.Bus;
 
-public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.ServerListViewHolder> {
+public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.ServerItem> {
     public Bus bus;
     private ArrayList<Server> servers;
 
@@ -59,12 +59,12 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
     }
 
     @Override
-    public ServerListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ServerListViewHolder(this, LayoutInflater.from(parent.getContext()).inflate(R.layout.mixin_chanitem, parent, false));
+    public ServerItem onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ServerCategory(this, LayoutInflater.from(parent.getContext()).inflate(R.layout.mixin_chancategory, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(ServerListViewHolder holder, int index) {
+    public void onBindViewHolder(ServerItem holder, int index) {
         Server server = servers.get(index);
         holder.setServer(server);
         holder.setText(server.getTitle());
@@ -89,17 +89,40 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
         }
     }
 
-    public static class ServerListViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerCategory extends ServerItem {
 
-        private final Drawable statusDisconnected;
-        private final Drawable statusConnected;
-        private final Drawable statusNotify;
+        private boolean rotation = true;
 
-        private ServerListAdapter adapter;
+        @InjectView(R.id.action)
+        ImageView action;
 
-        private Context context;
-        private Server server;
-        private int notificationCount;
+        public ServerCategory(ServerListAdapter adapter, View v) {
+            super(adapter, v);
+        }
+
+        @Override
+        protected void onClick(View v) {
+            RotateAnimation animation = new RotateAnimation(rotation ? 0 : 180, rotation ? 180 : 360, action.getPivotX(), action.getPivotY());
+            animation.setInterpolator(AnimationUtils.loadInterpolator(this.context, android.R.interpolator.fast_out_slow_in));
+            animation.setDuration(500);
+            animation.setFillAfter(true);
+
+            rotation = !rotation;
+            action.startAnimation(animation);
+        }
+    }
+
+    public static class ServerItem extends RecyclerView.ViewHolder {
+
+        protected final Drawable statusDisconnected;
+        protected final Drawable statusConnected;
+        protected final Drawable statusNotify;
+
+        protected ServerListAdapter adapter;
+
+        protected Context context;
+        protected Server server;
+        protected int notificationCount;
 
         @InjectView(R.id.messages_status)
         TextView messagesStatus;
@@ -107,7 +130,7 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
         @InjectView(R.id.text)
         TextView text;
 
-        public ServerListViewHolder(ServerListAdapter adapter, View v) {
+        public ServerItem(ServerListAdapter adapter, View v) {
             super(v);
             ButterKnife.inject(this, v);
 
@@ -122,17 +145,25 @@ public class ServerListAdapter extends RecyclerView.Adapter<ServerListAdapter.Se
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ServerListViewHolder.this.adapter.bus.post(new OnClickEvent(ServerListViewHolder.this.server));
+                    ServerItem.this.onClick(v);
                 }
             });
 
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    ServerListViewHolder.this.adapter.bus.post(new OnClickEvent(ServerListViewHolder.this.server, true));
-                    return true;
+                    return ServerItem.this.onLongClick(v);
                 }
             });
+        }
+
+        protected void onClick(View v) {
+            adapter.bus.post(new OnClickEvent(ServerItem.this.server));
+        }
+
+        protected boolean onLongClick(View v) {
+            ServerItem.this.adapter.bus.post(new OnClickEvent(ServerItem.this.server, true));
+            return true;
         }
 
         public void setServer(Server server) {

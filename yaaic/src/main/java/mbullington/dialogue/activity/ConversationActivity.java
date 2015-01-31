@@ -36,11 +36,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.speech.RecognizerIntent;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.method.TextKeyListener;
+import android.transition.Slide;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -186,10 +186,15 @@ public class ConversationActivity extends ActionBarActivity implements ServiceCo
         setContentView(R.layout.conversations);
         ButterKnife.inject(this);
 
+        Slide enterTransition = new Slide();
+        enterTransition.excludeTarget(android.R.id.statusBarBackground, true);
+
+        getWindow().setEnterTransition(enterTransition);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.arrow);
+        toolbar.setNavigationIcon(R.drawable.back_arrow);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

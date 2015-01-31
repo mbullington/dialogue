@@ -4,6 +4,8 @@
         <item name="colorPrimary">#9C27B0</item>
         <item name="colorPrimaryDark">#7B1FA2</item>
         <item name="colorAccent">#FF5252</item>
+
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="edittext_holo" parent="@android:style/Widget.EditText">
